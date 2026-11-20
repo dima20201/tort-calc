@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Калькулятор кондитера — демо</title>
+<style>
+:root{--bg:#fbf8f5;--card:#fff;--ink:#2b2522;--mute:#8a7f78;--line:#ece4dd;--acc:#c0587e;--acc2:#f6e3ea;--ok:#3f8f5a;--warn:#c27a1c;--bad:#c23b3b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{padding:18px 16px 8px;max-width:900px;margin:0 auto}
+h1{margin:0;font-size:22px;font-weight:700;letter-spacing:-.3px}
+h1 span{color:var(--acc)}
+.sub{color:var(--mute);font-size:13px;margin-top:2px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .in{max-width:900px;margin:0 auto;display:flex;gap:4px;padding:6px 12px;overflow-x:auto}
+nav button{flex:0 0 auto;border:0;background:none;padding:9px 12px;border-radius:10px;font:inherit;color:var(--mute);cursor:pointer}
+nav button.on{background:var(--acc2);color:var(--acc);font-weight:600}
+main{max-width:900px;margin:0 auto;padding:14px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.card h2{margin:0 0 10px;font-size:17px}
+.hint{color:var(--mute);font-size:13px;margin:0 0 10px}
+label{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}
+input,select,textarea{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc2);border-color:var(--acc)}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.btn{border:0;border-radius:10px;padding:9px 14px;font:inherit;cursor:pointer;background:var(--acc);color:#fff;font-weight:600}
+.btn.g{background:#f1ebe6;color:var(--ink);font-weight:500}
+.btn.s{padding:5px 9px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--mute);font-weight:500}
+td input,td select{padding:6px 8px}
+.num{text-align:right;white-space:nowrap}
+.x{background:none;border:0;color:var(--mute);font-size:18px;cursor:pointer;padding:2px 6px}
+.x:hover{color:var(--bad)}
+.big{font-size:28px;font-weight:700;color:var(--acc)}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
+.kv:last-child{border:0}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;background:#f1ebe6}
+.pill.ok{background:#e3f2e8;color:var(--ok)}.pill.warn{background:#fbefdc;color:var(--warn)}.pill.bad{background:#f8e1e1;color:var(--bad)}
+.day{margin:14px 0 6px;font-weight:600;display:flex;justify-content:space-between}
+.day small{color:var(--mute);font-weight:400}
+.order{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;background:#fff}
+.order .t{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.order .m{color:var(--mute);font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat b{display:block;font-size:20px}
+.stat span{color:var(--mute);font-size:12px}
+.hide{display:none}
+.wide{overflow-x:auto}
+.demo{background:linear-gradient(135deg,#3a2a30,#5a3646);color:#fff;padding:10px 16px;font-size:14px}.demo .in{max-width:900px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.demo a{background:#fff;color:var(--acc);padding:8px 14px;border-radius:10px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.about .steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.about .steps div{background:#fdf1f4;border-radius:14px;padding:12px;font-size:14px;color:var(--mute)}.about .steps b{display:block;color:var(--ink);margin-bottom:3px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
+.toast.on{opacity:1}
+footer{max-width:900px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font-size:12px}
+/* --- объёмный стиль --- */
+body{background:linear-gradient(180deg,rgba(253,236,242,.92) 0%,rgba(251,248,245,.55) 360px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23c0587e' stroke-opacity='.16' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='24' cy='30' r='6'/%3E%3Ccircle cx='35' cy='24' r='5'/%3E%3Cpath d='M30 18c2-6 7-8 11-8'/%3E%3Cpath d='M150 26l4 9 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z'/%3E%3Cpath d='M52 128h40v22H52zM52 139h40M58 128v-8a14 14 0 0 1 28 0v8M72 106v-6'/%3E%3Cpath d='M160 120c0-12 22-12 22 0l-4 26h-14zM163 120c2-8 14-10 16 0'/%3E%3Cpath d='M110 70l3 3m0-3l-3 3M200 80l3 3m0-3l-3 3M20 190l3 3m0-3l-3 3M130 200l3 3m0-3l-3 3'/%3E%3Ccircle cx='100' cy='190' r='3'/%3E%3Ccircle cx='190' cy='180' r='2.5'/%3E%3Cpath d='M18 92l12-12 6 6-12 12zM30 80l8-8'/%3E%3C/g%3E%3C/svg%3E"),#fbf8f5;background-attachment:fixed}
+.setlist .srow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.setlist .srow:last-child{border:0}
+.setlist .srow span{flex:1;font-size:15px}
+.setlist .srow small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
+.setlist .srow input,.setlist .srow select{width:110px;flex:0 0 110px;text-align:right}
+.res{margin:12px 0;padding:14px;border-radius:14px;background:#fdf1f4;font-size:15px}
+.res b.big2{display:block;font-size:24px;color:var(--acc)}
+.tools h2 .ic{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(145deg,#fff,#f8e3ea);box-shadow:0 3px 8px rgba(192,88,126,.18);margin-right:8px;font-size:18px;vertical-align:middle}
+.nowrap{flex-wrap:nowrap}
+/* --- разноцветность --- */
+nav button[data-t=orders].on{background:linear-gradient(135deg,#6b9cf2,#3f6fd8);box-shadow:0 6px 14px rgba(63,111,216,.35)}
+nav button[data-t=recipes].on{background:linear-gradient(135deg,#f6a65a,#e2803a);box-shadow:0 6px 14px rgba(226,128,58,.35)}
+nav button[data-t=products].on{background:linear-gradient(135deg,#5cc08a,#33a06a);box-shadow:0 6px 14px rgba(51,160,106,.35)}
+nav button[data-t=tools].on{background:linear-gradient(135deg,#a78bf5,#7b5be0);box-shadow:0 6px 14px rgba(123,91,224,.35)}
+nav button[data-t=settings].on{background:linear-gradient(135deg,#5fc3c9,#2f9ea6);box-shadow:0 6px 14px rgba(47,158,166,.35)}
+#t-orders .card,#t-orders .stat{border-top:4px solid #6b9cf2}
+#t-recipes .card{border-top:4px solid #f6a65a}
+#t-products .card{border-top:4px solid #5cc08a}
+#t-settings .card{border-top:4px solid #5fc3c9}
+#t-calc .card:first-child{border-top:4px solid #e07aa0}
+.kv span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:9px;background:var(--c,#ccc);vertical-align:1px}
+.kv:nth-of-type(1){--c:#f6a65a}.kv:nth-of-type(2){--c:#a78bf5}.kv:nth-of-type(3){--c:#5fc3c9}.kv:nth-of-type(4){--c:#6b9cf2}.kv:nth-of-type(5){--c:#5cc08a}.kv:nth-of-type(6){--c:#e07aa0}
+.stat:nth-child(1){background:linear-gradient(145deg,#fff,#eaf1ff)}.stat:nth-child(1) b{color:#3f6fd8}
+.stat:nth-child(2){background:linear-gradient(145deg,#fff,#fff1e3)}.stat:nth-child(2) b{color:#e2803a}
+.stat:nth-child(3){background:linear-gradient(145deg,#fff,#e6f7ee)}.stat:nth-child(3) b{color:#2e9963}
+.stat:nth-child(4){background:linear-gradient(145deg,#fff,#fdeaea)}.stat:nth-child(4) b{color:#d24b4b}
+#o-list .order{border-left:5px solid #c9c0bb}
+#o-list .order:has(.pill.ok){border-left-color:#5cc08a}#o-list .order:has(.pill.warn){border-left-color:#f6a65a}#o-list .order:has(.pill.bad){border-left-color:#e05a5a}
+.day span{color:#3f6fd8}
+.tools .card:nth-of-type(1){border-top:4px solid #f6a65a}.tools .card:nth-of-type(1) .ic{background:linear-gradient(145deg,#fff,#ffe6cc)}.tools .card:nth-of-type(1) .res{background:#fff4e8}.tools .card:nth-of-type(1) .big2{color:#e2803a}
+.tools .card:nth-of-type(2){border-top:4px solid #6b9cf2}.tools .card:nth-of-type(2) .ic{background:linear-gradient(145deg,#fff,#dde9ff)}.tools .card:nth-of-type(2) .res{background:#eef4ff}.tools .card:nth-of-type(2) .big2{color:#3f6fd8}
+.tools .card:nth-of-type(3){border-top:4px solid #5cc08a}.tools .card:nth-of-type(3) .ic{background:linear-gradient(145deg,#fff,#dcf3e6)}.tools .card:nth-of-type(3) .res{background:#ecf8f1}
+.tools .card:nth-of-type(4){border-top:4px solid #a78bf5}.tools .card:nth-of-type(4) .ic{background:linear-gradient(145deg,#fff,#ebe3ff)}.tools .card:nth-of-type(4) .pricebox{background:linear-gradient(135deg,#a78bf5,#6d4fd6);box-shadow:0 10px 24px rgba(109,79,214,.35)}
+.logo{background:conic-gradient(from 200deg,#ffe0ec,#fff1d6,#e3f6ea,#e3eeff,#efe6ff,#ffe0ec)}
+.sh td,.sh th{font-size:14px}
+header{padding-top:22px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:26px;background:linear-gradient(145deg,#fff,#f8e3ea);box-shadow:0 6px 16px rgba(192,88,126,.22),inset 0 1px 0 #fff}
+h1{font-size:24px}
+nav{background:rgba(251,248,245,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0}
+nav .in{padding:8px 12px 10px}
+nav button{display:flex;align-items:center;gap:6px;background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(60,30,40,.07);border-radius:12px}
+nav button i{font-style:normal}
+nav button.on{background:linear-gradient(135deg,#d06a90,#b84a72);color:#fff;box-shadow:0 6px 14px rgba(192,88,126,.35)}
+.card{border:0;border-radius:20px;padding:18px;box-shadow:0 1px 2px rgba(60,30,40,.05),0 10px 28px rgba(192,88,126,.10)}
+.card h2{font-size:18px}
+input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 12px;background:#fffdfc;box-shadow:inset 0 1px 2px rgba(60,30,40,.05)}
+.btn{background:linear-gradient(135deg,#d06a90,#b84a72);box-shadow:0 4px 12px rgba(192,88,126,.30);border-radius:12px;padding:10px 16px;transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 7px 16px rgba(192,88,126,.36)}
+.btn:active{transform:translateY(1px)}
+.btn.g{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(60,30,40,.10)}
+.btn.w{background:#fff;color:var(--acc);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.link{background:none;border:0;color:var(--acc);font:inherit;font-size:13px;font-weight:600;padding:6px 0 0;cursor:pointer}
+.pricebox{margin-top:14px;padding:16px;border-radius:16px;background:linear-gradient(135deg,#d06a90,#a8436a);color:#fff;box-shadow:0 10px 24px rgba(168,67,106,.35)}
+.pricebox .big{color:#fff;font-size:32px;text-shadow:0 2px 6px rgba(0,0,0,.15)}
+.pricebox .pl,.pricebox .pk{font-size:13px;opacity:.9}
+.stat{border:0;border-radius:18px;box-shadow:0 1px 2px rgba(60,30,40,.05),0 8px 22px rgba(192,88,126,.10)}
+.stat b{font-size:22px;color:var(--acc)}
+.order{border:0;border-radius:16px;box-shadow:0 1px 2px rgba(60,30,40,.05),0 6px 18px rgba(192,88,126,.09)}
+.modal{position:fixed;inset:0;background:rgba(43,37,34,.45);display:grid;place-items:center;padding:16px;z-index:20}
+.modal.hide{display:none}
+.mbox{background:#fff;border-radius:22px;padding:20px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.mbox h2{margin:0 0 4px}
+@media (max-width:600px){
+ .mob-stack tr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 0;border-bottom:1px solid var(--line);position:relative;align-items:end}
+ .mob-stack td{border:0;padding:0;min-width:0}
+ .mob-stack td.first{grid-column:1/-1;padding-right:34px}
+ .mob-stack td[data-l]::before{content:attr(data-l);display:block;font-size:11px;color:var(--mute);margin-bottom:3px}
+ .mob-stack td.del{position:absolute;right:0;top:14px}
+ .mob-stack td.num{text-align:left;padding-bottom:10px;font-weight:600}
+ .mob-stack thead{display:none}
+}
+@media print{nav,.noprint,footer,header .sub{display:none}body{background:#fff}.card{border:0}}
+</style>
+</head>
+<body>
+<div class="demo"><div class="in"><span><b>Демо-версия.</b> Попробуйте всё: добавьте свой торт и продукты, посчитайте цену, внесите заказ. После обновления страницы данные сбросятся.</span><a href="https://vk.me/dimmelnikov2012" target="_blank" rel="noopener">Купить полную · 990 ₽</a></div></div>
+<header>
+ <div class="brand"><div class="logo">🎂</div><h1>Калькулятор <span>кондитера</span></h1></div>
+ <div class="sub">Себестоимость, цена торта и заказы. В полной версии всё сохраняется на вашем телефоне и работает без интернета.</div>
+</header>
+<nav><div class="in">
+ <button data-t="calc" class="on"><i>🧮</i>Расчёт цены</button>
+ <button data-t="orders"><i>📋</i>Заказы</button>
+ <button data-t="recipes"><i>🍰</i>Торты</button>
+ <button data-t="products"><i>🥚</i>Продукты</button>
+ <button data-t="tools"><i>✨</i>Фишки</button>
+ <button data-t="settings"><i>⚙️</i>Настройки</button>
+</div></nav>
+<main>
+<div class="card about" id="about">
+ <button class="x" style="float:right" onclick="this.parentNode.remove()" title="Скрыть">×</button>
+ <h2>Что это за программа</h2>
+ <p class="hint" style="font-size:14px">Для домашних кондитеров, которые пекут торты на заказ. Она делает три вещи:</p>
+ <div class="steps">
+  <div><b>1. Считает себестоимость</b>Сколько вам на самом деле стоит торт: продукты, коробка, декор, свет, газ и ваше время.</div>
+  <div><b>2. Подсказывает цену</b>Чтобы вы не продавали в ноль и знали, сколько брать за килограмм.</div>
+  <div><b>3. Ведёт заказы</b>Когда отдавать торт, кто внёс предоплату и сколько ещё получить. Готовый текст подтверждения для клиента одной кнопкой.</div>
+  <div><b>✨ И ещё фишки</b>Сколько кг торта на число гостей, пересчёт рецепта под другую форму, список покупок по заказам, итоги месяца: сколько осталось вам.</div>
+ </div>
+ <p class="hint" style="font-size:14px;margin:12px 0 0"><b>Как попробовать:</b> во вкладке «Расчёт цены» выберите торт и вес. Свои торты добавляйте во вкладке «Торты», свои продукты и цены во вкладке «Продукты».</p>
+</div>
+
+<!-- РАСЧЁТ -->
+<section id="t-calc">
+ <div class="card">
+  <h2>Сколько стоит торт</h2>
+  <div class="grid">
+   <div><label>Торт (рецепт)</label><select id="c-rec"></select><button class="link" id="c-newrec" type="button">+ Добавить свой торт</button></div>
+   <div><label>Вес торта, кг</label><input id="c-kg" type="number" step="0.1" min="0.1" value="2"></div>
+   <div><label>Декор, ягоды, топперы, ₽</label><input id="c-decor" type="number" min="0" value="300"></div>
+   <div><label>Коробка, подложка, ₽</label><input id="c-box" type="number" min="0"></div>
+   <div><label>Часов работы</label><input id="c-hours" type="number" step="0.5" min="0"></div>
+  </div>
+ </div>
+ <div class="card">
+  <div class="kv"><span>Продукты по рецепту</span><b id="r-ing"></b></div>
+  <div class="kv"><span>Декор и упаковка</span><b id="r-dec"></b></div>
+  <div class="kv"><span>Свет, газ, вода, амортизация</span><b id="r-util"></b></div>
+  <div class="kv"><span>Ваш труд</span><b id="r-labor"></b></div>
+  <div class="kv"><span>Себестоимость с трудом</span><b id="r-cost"></b></div>
+  <div class="kv"><span>Наценка</span><b id="r-markup"></b></div>
+  <div class="pricebox row">
+   <div style="flex:1">
+    <div class="pl">Рекомендуемая цена</div>
+    <div class="big" id="r-price"></div>
+    <div class="pk" id="r-perkg"></div>
+   </div>
+   <button class="btn w" id="c-add">В заказы →</button>
+  </div>
+  <p class="hint" id="r-warn" style="margin-top:10px"></p>
+ </div>
+</section>
+
+<!-- ЗАКАЗЫ -->
+<section id="t-orders" class="hide">
+ <div class="stats" id="o-stats"></div>
+ <div class="row noprint" style="margin-top:14px"><button class="btn" id="o-open">+ Новый заказ</button></div>
+ <div class="card hide" style="margin-top:14px" id="o-form">
+  <h2 id="o-formtitle">Новый заказ</h2>
+  <div class="grid">
+   <div><label>Дата выдачи</label><input id="o-date" type="date"></div>
+   <div><label>Время</label><input id="o-time" type="time"></div>
+   <div><label>Клиент</label><input id="o-name" placeholder="Имя"></div>
+   <div><label>Телефон / ВК</label><input id="o-contact"></div>
+   <div><label>Торт</label><input id="o-cake" list="o-cakes" placeholder="Красный бархат"><datalist id="o-cakes"></datalist></div>
+   <div><label>Вес, кг</label><input id="o-kg" type="number" step="0.1"></div>
+   <div><label>Цена, ₽</label><input id="o-price" type="number"></div>
+   <div><label>Предоплата, ₽</label><input id="o-pre" type="number"></div>
+   <div><label>Доставка</label><select id="o-deliv"><option>Самовывоз</option><option>Доставка</option></select></div>
+  </div>
+  <div style="margin-top:10px"><label>Пожелания: надпись, цвета, аллергии, адрес</label><textarea id="o-note" rows="2"></textarea></div>
+  <div class="row" style="margin-top:10px">
+   <button class="btn" id="o-save">Сохранить заказ</button>
+   <button class="btn g" id="o-cancel">Отмена</button>
+  </div>
+ </div>
+ <div class="row noprint" style="margin-top:14px">
+  <select id="o-filter" style="width:auto"><option value="future">Предстоящие</option><option value="all">Все</option><option value="done">Выданные</option></select>
+  <button class="btn g s" onclick="window.print()">Печать списка</button>
+ </div>
+ <div id="o-list"></div>
+</section>
+
+<!-- РЕЦЕПТЫ -->
+<section id="t-recipes" class="hide">
+ <div class="card">
+  <h2>Рецепты</h2>
+  <p class="hint">Добавьте свои торты кнопкой «+ Новый торт». Внесите рецепт на тот вес, который из него выходит, и программа пересчитает его на любой вес торта.</p>
+  <div class="row">
+   <select id="rc-sel" style="flex:1;min-width:180px"></select>
+   <button class="btn s" id="rc-new">+ Новый торт</button>
+   <button class="btn g s" id="rc-copy">Копия</button>
+   <button class="btn g s" id="rc-del">Удалить</button>
+  </div>
+ </div>
+ <div class="card" id="rc-edit">
+  <div class="grid">
+   <div><label>Название</label><input id="rc-name"></div>
+   <div><label>Выход готового, г</label><input id="rc-yield" type="number"></div>
+  </div>
+  <div class="wide" style="margin-top:10px">
+  <table class="mob-stack"><thead><tr><th>Продукт</th><th>Количество</th><th>Цена упаковки, ₽</th><th class="num">Стоимость</th><th></th></tr></thead><tbody id="rc-rows"></tbody></table>
+  </div>
+  <div class="row" style="margin-top:10px;justify-content:space-between">
+   <span class="row"><button class="btn g s" id="rc-addrow">+ Продукт из списка</button><button class="btn g s" id="rc-newprod">+ Новый продукт</button></span>
+   <div><span class="hint">Итого: </span><b id="rc-total"></b> · <span class="hint">за 1 кг: </span><b id="rc-perkg"></b></div>
+  </div>
+ </div>
+</section>
+
+<!-- ПРОДУКТЫ -->
+<section id="t-products" class="hide">
+ <div class="card">
+  <h2>Продукты и цены</h2>
+  <p class="hint">Впишите свои цены из магазина: сколько стоит упаковка и сколько в ней. Цены везде пересчитаются сами. Цены ниже примерные.</p>
+  <div class="wide">
+  <table class="mob-stack"><thead><tr><th>Продукт</th><th>В упаковке</th><th>Ед.</th><th>Цена упаковки, ₽</th><th class="num">за 1 кг/л/шт</th><th></th></tr></thead><tbody id="p-rows"></tbody></table>
+  </div>
+  <button class="btn g s" id="p-add" style="margin-top:10px">+ Продукт</button>
+ </div>
+</section>
+
+<!-- ФИШКИ -->
+<section id="t-tools" class="hide tools">
+ <div class="card">
+  <h2><span class="ic">🎉</span>Сколько торта на гостей</h2>
+  <p class="hint">Клиент говорит «нас будет 12», а вы сразу называете вес и цену.</p>
+  <div class="grid">
+   <div><label>Гостей</label><input id="g-n" type="number" min="1" value="12"></div>
+   <div><label>Праздник</label><select id="g-t"><option value="150">День рождения: 150 г на гостя</option><option value="120">Свадьба, банкет: 120 г</option><option value="100">Детский праздник: 100 г</option><option value="200">Только чай с тортом: 200 г</option></select></div>
+  </div>
+  <div class="res" id="g-res"></div>
+  <button class="btn s" id="g-go">Посчитать цену такого торта →</button>
+ </div>
+ <div class="card">
+  <h2><span class="ic">📐</span>Пересчёт рецепта под другую форму</h2>
+  <p class="hint">Рецепт на форму 20 см, а нужна 24 см? Программа скажет, во сколько раз увеличить продукты, и создаст новый рецепт.</p>
+  <div class="grid">
+   <div><label>Рецепт на форму, см</label><div style="display:grid;gap:6px"><select id="f-s1"><option value="c">Круглая</option><option value="s">Квадратная</option></select><input id="f-d1" type="number" placeholder="см" value="20"></div></div>
+   <div><label>Нужна форма, см</label><div style="display:grid;gap:6px"><select id="f-s2"><option value="c">Круглая</option><option value="s">Квадратная</option></select><input id="f-d2" type="number" placeholder="см" value="24"></div></div>
+  </div>
+  <div class="res" id="f-res"></div>
+  <div class="row"><select id="f-rec" style="flex:1;min-width:160px"></select><button class="btn s" id="f-make">Создать пересчитанный рецепт</button></div>
+ </div>
+ <div class="card">
+  <h2><span class="ic">🛒</span>Список покупок по заказам</h2>
+  <p class="hint">Программа смотрит, какие торты заказаны, и считает, сколько каких продуктов купить и сколько это будет стоить.</p>
+  <div class="row"><span class="hint" style="margin:0">Заказы на ближайшие</span><select id="sh-d" style="width:auto"><option value="3">3 дня</option><option value="7" selected>7 дней</option><option value="14">14 дней</option><option value="31">месяц</option></select><button class="btn g s" id="sh-copy">Скопировать список</button></div>
+  <div id="sh-res"></div>
+ </div>
+ <div class="card">
+  <h2><span class="ic">📊</span>Итоги месяца</h2>
+  <p class="hint">Сколько заработали на самом деле: выручка минус продукты, упаковка, свет и газ.</p>
+  <input id="m-m" type="month" style="width:auto">
+  <div id="m-res" style="margin-top:10px"></div>
+ </div>
+</section>
+
+<!-- НАСТРОЙКИ -->
+<section id="t-settings" class="hide">
+ <div class="card">
+  <h2>Ваши ставки</h2>
+  <p class="hint">Заполните один раз, и все расчёты будут учитывать ваши цифры.</p>
+  <div class="setlist">
+   <div class="srow"><span>Час работы, ₽<small>Сколько вы хотите зарабатывать в час</small></span><input id="s-rate" type="number"></div>
+   <div class="srow"><span>Наценка, %<small>Прибыль сверх продуктов и материалов</small></span><input id="s-markup" type="number"></div>
+   <div class="srow"><span>Свет, газ, вода, %<small>Доля от стоимости продуктов, с износом техники</small></span><input id="s-util" type="number"></div>
+   <div class="srow"><span>Коробка и подложка, ₽<small>Подставляется в каждый расчёт</small></span><input id="s-box" type="number"></div>
+   <div class="srow"><span>Часов на 1 кг<small>Чтобы время работы считалось само</small></span><input id="s-hpk" type="number" step="0.5"></div>
+   <div class="srow"><span>Округлять цену до, ₽<small>Чтобы цена была красивой</small></span><select id="s-round"><option>10</option><option>50</option><option>100</option></select></div>
+  </div>
+ </div>
+ <div class="card"><h2>Полная версия — 990 ₽ один раз</h2><p class="hint">Без подписки. Всё, что в демо, плюс: торты, продукты и заказы сохраняются, заказов сколько угодно, резервная копия в файл, работает без интернета. Файл присылаем сразу после оплаты.</p><a class="btn" style="text-decoration:none;display:inline-block" href="https://vk.me/dimmelnikov2012" target="_blank" rel="noopener">Написать и купить</a></div>
+</section>
+</main>
+<footer>Калькулятор кондитера · демо-версия · Дмитрий, Петрозаводск. Сделать сайт с витриной тортов и приёмом заказов можно по запросу.</footer>
+<div class="modal hide" id="pm"><div class="mbox">
+ <h2>Новый продукт</h2>
+ <p class="hint">Как на упаковке из магазина: сколько в ней и сколько она стоит.</p>
+ <div style="margin-bottom:10px"><label>Название</label><input id="pm-n" placeholder="Например, маскарпоне"></div>
+ <div class="grid">
+  <div><label>В упаковке</label><input id="pm-q" type="number" value="250"></div>
+  <div><label>Ед.</label><select id="pm-u"><option>г</option><option>мл</option><option>шт</option></select></div>
+  <div><label>Цена упаковки, ₽</label><input id="pm-p" type="number"></div>
+ </div>
+ <div class="row" style="margin-top:14px"><button class="btn" id="pm-ok">Добавить</button><button class="btn g" id="pm-no">Отмена</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+var KEY='konditer_v1';
+var DEF={
+ set:{rate:250,markup:30,util:10,box:250,hpk:2,round:50},
+ products:[
+  {id:'p1',n:'Мука пшеничная',q:1000,u:'г',p:75},
+  {id:'p2',n:'Сахар',q:1000,u:'г',p:95},
+  {id:'p3',n:'Яйцо',q:10,u:'шт',p:130},
+  {id:'p4',n:'Масло сливочное 82%',q:180,u:'г',p:210},
+  {id:'p5',n:'Сливки 33%',q:500,u:'мл',p:420},
+  {id:'p6',n:'Сыр творожный',q:500,u:'г',p:480},
+  {id:'p7',n:'Сахарная пудра',q:500,u:'г',p:120},
+  {id:'p8',n:'Какао-порошок',q:100,u:'г',p:150},
+  {id:'p9',n:'Кефир',q:900,u:'мл',p:110},
+  {id:'p10',n:'Разрыхлитель',q:100,u:'г',p:90},
+  {id:'p11',n:'Масло растительное',q:1000,u:'мл',p:160},
+  {id:'p12',n:'Краситель гелевый',q:10,u:'г',p:180},
+  {id:'p13',n:'Сгущёнка',q:380,u:'г',p:120},
+  {id:'p14',n:'Шоколад тёмный',q:100,u:'г',p:140},
+  {id:'p15',n:'Ягоды замороженные',q:300,u:'г',p:260},
+  {id:'p16',n:'Ванильный сахар',q:10,u:'г',p:20}
+ ],
+ recipes:[
+  {id:'r1',n:'Красный бархат',y:2000,it:[['p1',380],['p2',330],['p3',4],['p11',300],['p9',300],['p8',20],['p10',12],['p12',3],['p6',600],['p4',100],['p7',120]]},
+  {id:'r2',n:'Шоколадный с ганашем',y:2000,it:[['p1',300],['p2',300],['p3',5],['p8',70],['p9',250],['p11',150],['p10',10],['p5',400],['p14',300],['p4',80]]},
+  {id:'r3',n:'Медовик на сгущёнке',y:1800,it:[['p1',500],['p2',150],['p3',3],['p4',100],['p13',760],['p5',300]]},
+  {id:'r4',n:'Ванильный бисквит с ягодами',y:1800,it:[['p1',300],['p2',300],['p3',6],['p16',10],['p10',8],['p6',500],['p5',300],['p7',120],['p15',300]]}
+ ],
+ orders:[]
+};
+var S;
+function load(){S=null;
+ if(!S||!S.products){S=JSON.parse(JSON.stringify(DEF))}
+ S.set=Object.assign({},DEF.set,S.set||{});S.orders=S.orders||[]}
+function save(){}
+function $(id){return document.getElementById(id)}
+function rub(v){return Math.round(v).toLocaleString('ru-RU')+' ₽'}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function uid(){return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(function(){e.classList.remove('on')},1800)}
+function prod(id){for(var i=0;i<S.products.length;i++)if(S.products[i].id===id)return S.products[i];return null}
+function unitPrice(p){return p&&p.q>0?p.p/p.q:0}
+function recCost(r){var s=0;r.it.forEach(function(x){s+=unitPrice(prod(x[0]))*(+x[1]||0)});return s}
+function rec(id){for(var i=0;i<S.recipes.length;i++)if(S.recipes[i].id===id)return S.recipes[i];return S.recipes[0]}
+function num(id){return parseFloat($(id).value)||0}
+
+/* tabs */
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){
+ document.querySelectorAll('nav button').forEach(function(x){x.classList.toggle('on',x===b)});
+ document.querySelectorAll('main>section').forEach(function(s){s.classList.toggle('hide',s.id!=='t-'+b.dataset.t)});
+ render(b.dataset.t);window.scrollTo(0,0)}});
+
+/* CALC */
+var calcTouched={box:false,hours:false};
+function fillRecSelect(sel,cur){sel.innerHTML=S.recipes.map(function(r){return '<option value="'+r.id+'">'+esc(r.n)+'</option>'}).join('');if(cur)sel.value=cur}
+function calc(){
+ var r=rec($('c-rec').value);if(!r){return}
+ var kg=num('c-kg');
+ if(!calcTouched.box)$('c-box').value=S.set.box;
+ if(!calcTouched.hours)$('c-hours').value=Math.round(S.set.hpk*kg*2)/2;
+ var ing=r.y>0?recCost(r)/r.y*kg*1000:0;
+ var dec=num('c-decor')+num('c-box');
+ var util=ing*S.set.util/100;
+ var labor=num('c-hours')*S.set.rate;
+ var cost=ing+dec+util+labor;
+ var mk=(ing+dec+util)*S.set.markup/100;
+ var rd=+S.set.round||50;
+ var price=Math.ceil((cost+mk)/rd)*rd;
+ $('r-ing').textContent=rub(ing);$('r-dec').textContent=rub(dec);$('r-util').textContent=rub(util);
+ $('r-labor').textContent=rub(labor)+' ('+num('c-hours')+' ч × '+S.set.rate+' ₽)';
+ $('r-cost').textContent=rub(cost);$('r-markup').textContent=rub(mk)+' ('+S.set.markup+'%)';
+ $('r-price').textContent=rub(price);$('r-perkg').textContent=kg>0?'≈ '+rub(price/kg)+' за 1 кг':'';
+ $('r-warn').textContent='Если продаёте дешевле '+rub(Math.ceil((ing+dec+util)/rd)*rd)+', вы работаете бесплатно: эта сумма уходит только на продукты и материалы.';
+ calc.last={r:r,kg:kg,price:price}
+}
+['c-rec','c-kg','c-decor'].forEach(function(id){$(id).addEventListener('input',calc)});
+$('c-box').addEventListener('input',function(){calcTouched.box=true;calc()});
+$('c-hours').addEventListener('input',function(){calcTouched.hours=true;calc()});
+$('c-kg').addEventListener('input',function(){calcTouched.hours=false;calc()});
+$('c-add').onclick=function(){var l=calc.last;if(!l)return;resetOrderForm();$('o-cake').value=l.r.n;$('o-kg').value=l.kg;$('o-price').value=l.price;
+ document.querySelector('nav button[data-t=orders]').click();showForm(true);$('o-date').focus();toast('Заполните дату и клиента')};
+
+/* ORDERS */
+var editing=null;
+function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function resetOrderForm(){editing=null;['o-date','o-time','o-name','o-contact','o-cake','o-kg','o-price','o-pre','o-note'].forEach(function(id){$(id).value=''});$('o-deliv').value='Самовывоз';$('o-formtitle').textContent='Новый заказ';showForm(false)}
+function showForm(on){$('o-form').classList.toggle('hide',!on);$('o-open').classList.toggle('hide',on)}
+$('o-open').onclick=function(){resetOrderForm();showForm(true);$('o-date').focus()};
+$('o-cancel').onclick=resetOrderForm;
+$('o-save').onclick=function(){
+ if(!$('o-date').value){toast('Укажите дату выдачи');return}
+ if(!editing&&S.orders.length>=3){toast('В демо до 3 заказов. В полной версии без ограничений');return}
+ var o={id:editing||uid(),date:$('o-date').value,time:$('o-time').value,name:$('o-name').value.trim(),contact:$('o-contact').value.trim(),cake:$('o-cake').value.trim(),kg:num('o-kg'),price:num('o-price'),pre:num('o-pre'),deliv:$('o-deliv').value,note:$('o-note').value.trim(),done:false};
+ if(editing){S.orders=S.orders.map(function(x){if(x.id===editing){o.done=x.done;return o}return x})}else S.orders.push(o);
+ save();resetOrderForm();renderOrders();toast('Заказ сохранён')};
+function fmtDay(ds){var d=new Date(ds+'T12:00');return d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})}
+function renderOrders(){
+ var t=today(),f=$('o-filter').value;
+ var list=S.orders.slice().sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time)});
+ if(f==='future')list=list.filter(function(o){return !o.done});
+ if(f==='done')list=list.filter(function(o){return o.done});
+ var week=new Date();week.setDate(week.getDate()+7);var w=week.toISOString().slice(0,10);
+ var act=S.orders.filter(function(o){return !o.done});
+ var wk=act.filter(function(o){return o.date>=t&&o.date<=w});
+ var debt=act.reduce(function(s,o){return s+Math.max(0,o.price-o.pre)},0);
+ var m=t.slice(0,7);var mon=S.orders.filter(function(o){return o.date.slice(0,7)===m}).reduce(function(s,o){return s+o.price},0);
+ var kgw=wk.reduce(function(s,o){return s+o.kg},0);
+ $('o-stats').innerHTML='<div class="stat"><b>'+wk.length+'</b><span>заказов на 7 дней ('+Math.round(kgw*10)/10+' кг)</span></div>'+
+  '<div class="stat"><b>'+rub(debt)+'</b><span>осталось получить</span></div>'+
+  '<div class="stat"><b>'+rub(mon)+'</b><span>заказов в этом месяце</span></div>'+
+  '<div class="stat"><b>'+act.filter(function(o){return !o.pre}).length+'</b><span>без предоплаты</span></div>';
+ if(!list.length){$('o-list').innerHTML='<p class="hint" style="margin-top:14px">Заказов пока нет. Посчитайте торт во вкладке «Расчёт цены» и нажмите «В заказы».</p>';return}
+ var h='',cur='';
+ list.forEach(function(o){
+  if(o.date!==cur){cur=o.date;var same=list.filter(function(x){return x.date===cur});var kg=same.reduce(function(s,x){return s+x.kg},0);
+   h+='<div class="day"><span>'+fmtDay(cur)+(cur===t?' · сегодня':'')+'</span><small>'+same.length+' шт · '+Math.round(kg*10)/10+' кг</small></div>'}
+  var left=o.price-o.pre;var pill=o.done?'<span class="pill ok">выдан</span>':(!o.pre?'<span class="pill bad">нет предоплаты</span>':(left>0?'<span class="pill warn">доплата '+rub(left)+'</span>':'<span class="pill ok">оплачен</span>'));
+  if(!o.done&&o.date<t)pill+=' <span class="pill bad">просрочен</span>';
+  h+='<div class="order"><div class="t"><b>'+(o.time?esc(o.time)+' · ':'')+esc(o.cake||'Торт')+(o.kg?' · '+o.kg+' кг':'')+'</b><span>'+rub(o.price)+'</span></div>'+
+   '<div class="m">'+esc(o.name)+(o.contact?' · '+esc(o.contact):'')+' · '+esc(o.deliv)+'</div>'+
+   (o.note?'<div style="margin-top:4px">'+esc(o.note)+'</div>':'')+
+   '<div class="row" style="margin-top:6px;justify-content:space-between">'+pill+'<span class="noprint"><button class="btn g s" data-a="done" data-id="'+o.id+'">'+(o.done?'Вернуть':'Выдан')+'</button> <button class="btn g s" data-a="copy" data-id="'+o.id+'">Текст клиенту</button> <button class="btn g s" data-a="edit" data-id="'+o.id+'">Изменить</button> <button class="x" data-a="del" data-id="'+o.id+'" title="Удалить">×</button></span></div></div>'});
+ $('o-list').innerHTML=h}
+$('o-filter').onchange=renderOrders;
+$('o-list').onclick=function(e){var b=e.target.closest('[data-a]');if(!b)return;var id=b.dataset.id,o=S.orders.filter(function(x){return x.id===id})[0];if(!o)return;
+ if(b.dataset.a==='done'){o.done=!o.done}
+ if(b.dataset.a==='del'){if(!confirm('Удалить заказ?'))return;S.orders=S.orders.filter(function(x){return x.id!==id})}
+ if(b.dataset.a==='copy'){copyText(clientText(o),'Текст для клиента скопирован, вставьте его в переписку');return}
+ if(b.dataset.a==='edit'){editing=id;$('o-date').value=o.date;$('o-time').value=o.time;$('o-name').value=o.name;$('o-contact').value=o.contact;$('o-cake').value=o.cake;$('o-kg').value=o.kg||'';$('o-price').value=o.price||'';$('o-pre').value=o.pre||'';$('o-deliv').value=o.deliv;$('o-note').value=o.note;$('o-formtitle').textContent='Изменить заказ';showForm(true);$('o-form').scrollIntoView();return}
+ save();renderOrders()};
+
+/* RECIPES */
+var curRec=null;
+function renderRecipes(){
+ if(!S.recipes.length){S.recipes.push({id:uid(),n:'Мой торт',y:1000,it:[]})}
+ if(!curRec||!S.recipes.some(function(r){return r.id===curRec}))curRec=S.recipes[0].id;
+ fillRecSelect($('rc-sel'),curRec);var r=rec(curRec);
+ $('rc-name').value=r.n;$('rc-yield').value=r.y;
+ var opts=S.products.map(function(p){return '<option value="'+p.id+'">'+esc(p.n)+'</option>'}).join('');
+ $('rc-rows').innerHTML=r.it.map(function(x,i){var p=prod(x[0]);return '<tr><td class="first"><select data-i="'+i+'" data-k="p">'+opts.replace('value="'+x[0]+'"','value="'+x[0]+'" selected')+'</select></td>'+
+  '<td data-l="Количество"><div class="row nowrap"><input type="number" data-i="'+i+'" data-k="q" value="'+x[1]+'" style="width:90px"><span class="hint" style="margin:0">'+(p?p.u:'')+'</span></div></td>'+
+  '<td data-l="'+(p?'Цена за '+p.q+' '+p.u+', ₽':'Цена, ₽')+'"><input type="number" data-i="'+i+'" data-k="pp" value="'+(p?p.p:0)+'" style="width:100px"></td>'+
+  '<td class="num" data-l="Стоимость">'+rub(unitPrice(p)*x[1])+'</td><td class="del"><button class="x" data-i="'+i+'" data-k="del">×</button></td></tr>'}).join('');
+ recTotals()}
+function recTotals(){var r=rec(curRec);var c=recCost(r);$('rc-total').textContent=rub(c);$('rc-perkg').textContent=r.y>0?rub(c/r.y*1000):'—'}
+$('rc-sel').onchange=function(){curRec=this.value;renderRecipes()};
+$('rc-name').oninput=function(){rec(curRec).n=this.value;save();var o=$('rc-sel').querySelector('option[value="'+curRec+'"]');if(o)o.textContent=this.value};
+$('rc-yield').oninput=function(){rec(curRec).y=parseFloat(this.value)||0;save();recTotals()};
+$('rc-rows').addEventListener('change',function(e){var t=e.target,i=+t.dataset.i,r=rec(curRec);if(t.dataset.k==='p'){r.it[i][0]=t.value;save();renderRecipes()}});
+$('rc-rows').addEventListener('input',function(e){var t=e.target,i=+t.dataset.i,r=rec(curRec);
+ if(t.dataset.k==='pp'){var p=prod(r.it[i][0]);if(!p)return;p.p=parseFloat(t.value)||0;save();
+  [].forEach.call($('rc-rows').querySelectorAll('tr'),function(tr,j){var x=r.it[j];if(x&&x[0]===p.id){tr.querySelector('.num').textContent=rub(unitPrice(p)*x[1]);var inp=tr.querySelector('[data-k=pp]');if(inp!==t)inp.value=p.p}});recTotals();return}
+ if(t.dataset.k==='q'){r.it[i][1]=parseFloat(t.value)||0;save();t.closest('tr').querySelector('.num').textContent=rub(unitPrice(prod(r.it[i][0]))*r.it[i][1]);recTotals()}});
+$('rc-rows').addEventListener('click',function(e){var t=e.target;if(t.dataset.k==='del'){rec(curRec).it.splice(+t.dataset.i,1);save();renderRecipes()}});
+$('rc-addrow').onclick=function(){rec(curRec).it.push([S.products[0].id,100]);save();renderRecipes()};
+$('rc-new').onclick=function(){var r={id:uid(),n:'Мой торт',y:1000,it:[]};S.recipes.push(r);curRec=r.id;save();renderRecipes();$('rc-name').select()};
+$('rc-copy').onclick=function(){var s=rec(curRec),r=JSON.parse(JSON.stringify(s));r.id=uid();r.n=s.n+' (копия)';S.recipes.push(r);curRec=r.id;save();renderRecipes()};
+$('rc-del').onclick=function(){if(S.recipes.length<2){toast('Нужен хотя бы один рецепт');return}if(!confirm('Удалить рецепт «'+rec(curRec).n+'»?'))return;S.recipes=S.recipes.filter(function(r){return r.id!==curRec});curRec=null;save();renderRecipes()};
+
+/* PRODUCTS */
+function renderProducts(){
+ $('p-rows').innerHTML=S.products.map(function(p,i){var per=p.u==='шт'?unitPrice(p):unitPrice(p)*1000;
+  return '<tr><td class="first"><input data-i="'+i+'" data-k="n" value="'+esc(p.n)+'"></td><td data-l="В упаковке"><input type="number" data-i="'+i+'" data-k="q" value="'+p.q+'"></td>'+
+  '<td data-l="Ед."><select data-i="'+i+'" data-k="u"><option'+(p.u==='г'?' selected':'')+'>г</option><option'+(p.u==='мл'?' selected':'')+'>мл</option><option'+(p.u==='шт'?' selected':'')+'>шт</option></select></td>'+
+  '<td data-l="Цена упак., ₽"><input type="number" data-i="'+i+'" data-k="p" value="'+p.p+'"></td><td class="num" data-l="За 1 кг/л/шт">'+rub(per)+'</td><td class="del"><button class="x" data-i="'+i+'" data-k="del">×</button></td></tr>'}).join('')}
+$('p-rows').addEventListener('input',function(e){var t=e.target,p=S.products[+t.dataset.i];if(!p||!t.dataset.k||t.dataset.k==='del')return;
+ p[t.dataset.k]=(t.dataset.k==='n'||t.dataset.k==='u')?t.value:(parseFloat(t.value)||0);save();
+ var per=p.u==='шт'?unitPrice(p):unitPrice(p)*1000;t.closest('tr').querySelector('.num').textContent=rub(per)});
+$('p-rows').addEventListener('change',function(e){if(e.target.dataset.k==='u')renderProducts()});
+$('p-rows').addEventListener('click',function(e){var t=e.target;if(t.dataset.k!=='del')return;var p=S.products[+t.dataset.i];
+ var used=S.recipes.filter(function(r){return r.it.some(function(x){return x[0]===p.id})});
+ if(used.length){toast('Продукт есть в рецепте «'+used[0].n+'»');return}
+ S.products.splice(+t.dataset.i,1);save();renderProducts()});
+var pmCb=null;
+function openPM(cb){pmCb=cb;$('pm-n').value='';$('pm-q').value=250;$('pm-u').value='г';$('pm-p').value='';$('pm').classList.remove('hide');setTimeout(function(){$('pm-n').focus()},50)}
+$('pm-no').onclick=function(){$('pm').classList.add('hide')};
+$('pm').onclick=function(e){if(e.target===this)this.classList.add('hide')};
+$('pm-ok').onclick=function(){var n=$('pm-n').value.trim();if(!n){toast('Впишите название');return}
+ var p={id:uid(),n:n,q:parseFloat($('pm-q').value)||1,u:$('pm-u').value,p:parseFloat($('pm-p').value)||0};S.products.push(p);save();$('pm').classList.add('hide');toast('Продукт «'+n+'» добавлен');if(pmCb)pmCb(p)};
+$('p-add').onclick=function(){openPM(function(){renderProducts()})};
+$('rc-newprod').onclick=function(){openPM(function(p){rec(curRec).it.push([p.id,100]);save();renderRecipes()})};
+$('c-newrec').onclick=function(){document.querySelector('nav button[data-t=recipes]').click();$('rc-new').click()};
+
+/* SETTINGS */
+var smap={'s-rate':'rate','s-markup':'markup','s-util':'util','s-box':'box','s-hpk':'hpk','s-round':'round'};
+function renderSettings(){for(var k in smap)$(k).value=S.set[smap[k]]}
+Object.keys(smap).forEach(function(k){$(k).addEventListener('input',function(){S.set[smap[k]]=parseFloat(this.value)||0;save()})});
+
+/* COPY / CLIENT TEXT */
+function copyText(t,msg){function fb(){var a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy');toast(msg||'Скопировано')}catch(e){prompt('Скопируйте текст:',t)}a.remove()}
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(function(){toast(msg||'Скопировано')},fb)}else fb()}
+function clientText(o){var left=Math.max(0,o.price-o.pre);
+ return 'Здравствуйте'+(o.name?', '+o.name.replace(/\s*\(.*\)$/,''):'')+'! Подтверждаю ваш заказ:\n'+
+ '🎂 '+(o.cake||'Торт')+(o.kg?', '+o.kg+' кг':'')+'\n'+
+ '📅 '+fmtDay(o.date)+(o.time?', '+o.time:'')+' · '+o.deliv+'\n'+
+ (o.note?'✍️ '+o.note+'\n':'')+
+ '💰 Стоимость '+rub(o.price)+(o.pre?', предоплата '+rub(o.pre)+' получена':'')+(left>0?', к доплате '+rub(left):', заказ оплачен')+'\n'+
+ 'Если что-то нужно поменять, напишите мне. Спасибо!'}
+
+/* TOOLS */
+function findRec(name){name=(name||'').trim().toLowerCase();return S.recipes.filter(function(r){return r.n.trim().toLowerCase()===name})[0]||null}
+function area(s,d){return s==='s'?d*d:Math.PI*d*d/4}
+function fmtQ(v,u){if(u==='шт')return Math.ceil(v)+' шт';if(v>=1000)return (Math.round(v/100)/10).toString().replace('.',',')+(u==='мл'?' л':' кг');return Math.round(v)+' '+u}
+function guests(){var n=num('g-n'),g=+$('g-t').value;var kg=Math.max(1,Math.ceil(n*g/1000*2)/2);
+ $('g-res').innerHTML='Нужен торт примерно<b class="big2">'+kg.toString().replace('.',',')+' кг</b><span class="hint">'+n+' гостей × '+g+' г, округлено до 0,5 кг</span>';return kg}
+$('g-n').oninput=guests;$('g-t').onchange=guests;
+$('g-go').onclick=function(){var kg=guests();$('c-kg').value=kg;calcTouched.hours=false;document.querySelector('nav button[data-t=calc]').click()};
+function formK(){return area($('f-s2').value,num('f-d2'))/Math.max(1,area($('f-s1').value,num('f-d1')))}
+function forms(){var k=formK();var r=rec($('f-rec').value);
+ $('f-res').innerHTML='Умножьте все продукты на<b class="big2">× '+(Math.round(k*100)/100).toString().replace('.',',')+'</b>'+(r?'<span class="hint">«'+esc(r.n)+'»: выход '+fmtQ(r.y,'г')+' → '+fmtQ(r.y*k,'г')+', продукты '+rub(recCost(r))+' → '+rub(recCost(r)*k)+'</span>':'')}
+['f-s1','f-d1','f-s2','f-d2','f-rec'].forEach(function(id){$(id).addEventListener('input',forms);$(id).addEventListener('change',forms)});
+$('f-make').onclick=function(){var s=rec($('f-rec').value),k=formK();if(!s)return;var r=JSON.parse(JSON.stringify(s));r.id=uid();
+ r.n=s.n+' (форма '+num('f-d2')+' см)';r.y=Math.round(s.y*k);r.it=r.it.map(function(x){var p=prod(x[0]);var q=x[1]*k;return [x[0],p&&p.u==='шт'?Math.ceil(q):Math.round(q)]});
+ S.recipes.push(r);save();toast('Создан рецепт «'+r.n+'»');curRec=r.id;document.querySelector('nav button[data-t=recipes]').click()};
+var shText='';
+function shopping(){var d=+$('sh-d').value,t=today(),e=new Date();e.setDate(e.getDate()+d);e.setMinutes(e.getMinutes()-e.getTimezoneOffset());var end=e.toISOString().slice(0,10);
+ var need={},used=[],miss=[];
+ S.orders.filter(function(o){return !o.done&&o.date>=t&&o.date<=end}).forEach(function(o){var r=findRec(o.cake);if(!r||!r.y||!o.kg){miss.push(o.cake||'без названия');return}
+  used.push(o);var f=o.kg*1000/r.y;r.it.forEach(function(x){need[x[0]]=(need[x[0]]||0)+x[1]*f})});
+ if(!used.length){$('sh-res').innerHTML='<p class="hint" style="margin-top:12px">На этот период нет заказов с тортами из ваших рецептов.'+(miss.length?' Не найдены рецепты: '+esc(miss.join(', '))+'. Название торта в заказе должно совпадать с названием рецепта.':'')+'</p>';shText='';return}
+ var tot=0,rows='',lines=['Список покупок на '+used.length+' заказ(а):'];
+ Object.keys(need).forEach(function(id){var p=prod(id);if(!p)return;var q=need[id];var packs=Math.max(1,Math.ceil(q/p.q));var c=packs*p.p;tot+=c;
+  rows+='<tr><td>'+esc(p.n)+'</td><td class="num">'+fmtQ(q,p.u)+'</td><td class="num">'+packs+' уп.</td><td class="num">'+rub(c)+'</td></tr>';lines.push('• '+p.n+': '+fmtQ(q,p.u)+' ('+packs+' уп.)')});
+ lines.push('Примерно '+rub(tot));shText=lines.join('\n');
+ $('sh-res').innerHTML='<div class="wide" style="margin-top:12px"><table class="sh"><thead><tr><th>Продукт</th><th class="num">Нужно</th><th class="num">Купить</th><th class="num">≈ ₽</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+  '<div class="res">Заказов: '+used.length+' · на продукты примерно <b>'+rub(tot)+'</b>'+(miss.length?'<br><span class="hint">Без рецепта, не посчитаны: '+esc(miss.join(', '))+'</span>':'')+'</div>'}
+$('sh-d').onchange=shopping;
+$('sh-copy').onclick=function(){if(!shText){toast('Список пуст');return}copyText(shText,'Список покупок скопирован')};
+function month(){var m=$('m-m').value||today().slice(0,7);var os=S.orders.filter(function(o){return o.date.slice(0,7)===m});
+ if(!os.length){$('m-res').innerHTML='<p class="hint">В этом месяце заказов нет.</p>';return}
+ var rev=0,ing=0,box=0,kg=0,cnt={};os.forEach(function(o){rev+=o.price;kg+=o.kg||0;box+=S.set.box;var r=findRec(o.cake);if(r&&r.y&&o.kg)ing+=recCost(r)/r.y*o.kg*1000;var k=o.cake||'Торт';cnt[k]=(cnt[k]||0)+1});
+ var util=ing*S.set.util/100,inc=rev-ing-box-util;var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]})[0];
+ $('m-res').innerHTML='<div class="kv"><span>Заказов</span><b>'+os.length+' · '+String(Math.round(kg*10)/10).replace('.',',')+' кг</b></div><div class="kv"><span>Выручка</span><b>'+rub(rev)+'</b></div><div class="kv"><span>Продукты</span><b>− '+rub(ing)+'</b></div><div class="kv"><span>Коробки и подложки</span><b>− '+rub(box)+'</b></div><div class="kv"><span>Свет, газ, вода</span><b>− '+rub(util)+'</b></div>'+
+ '<div class="pricebox"><div class="pl">Остаётся вам</div><div class="big">'+rub(inc)+'</div><div class="pk">Самый популярный торт: '+esc(top)+' ('+cnt[top]+')</div></div>'}
+$('m-m').onchange=month;
+function renderTools(){if(!$('m-m').value)$('m-m').value=today().slice(0,7);var c=$('f-rec').value;fillRecSelect($('f-rec'),c);guests();forms();shopping();month()}
+
+function render(t){if(t==='calc'){var c=$('c-rec').value;fillRecSelect($('c-rec'),c);calc()}if(t==='orders'){$('o-cakes').innerHTML=S.recipes.map(function(r){return '<option value="'+esc(r.n)+'">'}).join('');renderOrders()}if(t==='recipes')renderRecipes();if(t==='products')renderProducts();if(t==='tools')renderTools();if(t==='settings')renderSettings()}
+function renderAll(){['calc','orders','recipes','products','tools','settings'].forEach(render)}
+load();(function(){function ds(n){var x=new Date();x.setDate(x.getDate()+n);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10)}
+S.orders=[{id:'d1',date:ds(1),time:'12:00',name:'Анна (пример)',contact:'+7 900 000-00-00',cake:'Красный бархат',kg:2,price:3200,pre:1000,deliv:'Самовывоз',note:'Надпись «С днём рождения!», ягоды',done:false},
+{id:'d2',date:ds(3),time:'17:30',name:'Ольга (пример)',contact:'vk.com/...',cake:'Медовик на сгущёнке',kg:1.5,price:2100,pre:0,deliv:'Доставка',note:'Без орехов',done:false}]})();renderAll();
+})();
+</script>
+</body>
+</html>
