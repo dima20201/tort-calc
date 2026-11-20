@@ -67,6 +67,44 @@ body{background:linear-gradient(180deg,rgba(253,236,242,.92) 0%,rgba(251,248,245
 .res b.big2{display:block;font-size:24px;color:var(--acc)}
 .tools h2 .ic{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(145deg,#fff,#f8e3ea);box-shadow:0 3px 8px rgba(192,88,126,.18);margin-right:8px;font-size:18px;vertical-align:middle}
 .nowrap{flex-wrap:nowrap}
+/* --- иллюстрации и анимации --- */
+header{position:relative}
+.cakeart{position:absolute;right:16px;top:8px;width:104px;height:auto;filter:drop-shadow(0 8px 14px rgba(192,88,126,.25));animation:float 4s ease-in-out infinite}
+header .brand,header .sub{padding-right:110px}
+@keyframes float{50%{transform:translateY(-5px) rotate(-2deg)}}
+.cakeart .flame{transform-origin:60px 14px;animation:flick .5s ease-in-out infinite alternate}
+@keyframes flick{to{transform:scale(.85,1.12) rotate(4deg)}}
+.cakeart .spark{animation:tw 1.6s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+.pic{flex:0 0 38px;width:38px;height:38px;border-radius:12px;display:inline-grid;place-items:center;font-size:20px;background:var(--pb,#fdf1f4);box-shadow:inset 0 -2px 0 rgba(0,0,0,.05),0 2px 6px rgba(60,30,40,.08)}
+.pic.big{width:56px;height:56px;flex-basis:56px;font-size:30px;border-radius:16px}
+.cellpic{display:flex;gap:8px;align-items:center}
+.cellpic>input,.cellpic>select{flex:1;min-width:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chips button{width:46px;height:46px;border-radius:14px;border:2px solid transparent;background:#fdf1f4;font-size:22px;cursor:pointer;transition:transform .15s,border-color .15s}
+.chips button.on{border-color:var(--acc);transform:scale(1.08);background:#fff}
+.mhead{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.mhead h2{margin:0}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+main>section:not(.hide)>.card,main>section:not(.hide)>.stats,main>section:not(.hide)>#o-list{animation:up .35s ease both}
+main>section:not(.hide)>.card:nth-child(2){animation-delay:.06s}
+main>section:not(.hide)>.card:nth-child(3){animation-delay:.12s}
+main>section:not(.hide)>.card:nth-child(4){animation-delay:.18s}
+.modal:not(.hide){animation:fadein .2s ease}
+.modal:not(.hide) .mbox{animation:sheet .38s cubic-bezier(.2,1.25,.4,1)}
+@keyframes fadein{from{opacity:0}}
+@keyframes sheet{from{opacity:0;transform:translateY(40px) scale(.94)}}
+tr.flash{animation:flash 1.4s ease}
+@keyframes flash{0%{background:#fff1c9;transform:translateX(-8px)}40%{background:#fff6dc;transform:none}100%{background:transparent}}
+.btn:active,.chips button:active{transform:scale(.95)}
+.demo{background:linear-gradient(135deg,#3a2a30,#5a3646);color:#fff;padding:10px 16px;font-size:14px}.demo .in{max-width:900px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.demo a{background:#fff;color:var(--acc);padding:8px 14px;border-radius:10px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.about .steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.about .steps div{background:#fdf1f4;border-radius:14px;padding:12px;font-size:14px;color:var(--mute)}.about .steps b{display:block;color:var(--ink);margin-bottom:3px}
+.toast{border-radius:14px;background:linear-gradient(135deg,#3a2a30,#5a3646);box-shadow:0 10px 24px rgba(0,0,0,.25);transform:translate(-50%,20px);transition:opacity .25s,transform .3s cubic-bezier(.2,1.3,.4,1);max-width:calc(100% - 32px);text-align:center}
+.toast.on{transform:translate(-50%,0)}
+.logo{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.4) rotate(-20deg);opacity:0}}
+@media (max-width:600px){.cakeart{width:78px;right:10px;top:12px}header .brand,header .sub{padding-right:76px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* --- разноцветность --- */
 nav button[data-t=orders].on{background:linear-gradient(135deg,#6b9cf2,#3f6fd8);box-shadow:0 6px 14px rgba(63,111,216,.35)}
 nav button[data-t=recipes].on{background:linear-gradient(135deg,#f6a65a,#e2803a);box-shadow:0 6px 14px rgba(226,128,58,.35)}
@@ -136,6 +174,24 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
 <body>
 <div class="demo"><div class="in"><span><b>Демо-версия.</b> Попробуйте всё: добавьте свой торт и продукты, посчитайте цену, внесите заказ. После обновления страницы данные сбросятся.</span><a href="https://vk.me/dimmelnikov2012" target="_blank" rel="noopener">Купить полную · 990 ₽</a></div></div>
 <header>
+ <svg class="cakeart" viewBox="0 0 120 112" aria-hidden="true">
+  <ellipse cx="60" cy="103" rx="52" ry="7" fill="#f1d3dd"/>
+  <rect x="10" y="94" width="100" height="6" rx="3" fill="#e9c3d0"/>
+  <rect x="16" y="64" width="88" height="32" rx="10" fill="#f39bb8"/>
+  <rect x="16" y="76" width="88" height="6" fill="#fff3f7"/>
+  <rect x="26" y="38" width="68" height="30" rx="9" fill="#ffd9b0"/>
+  <path d="M26 47q0-9 9-9h50q9 0 9 9v4q-3 6-6 0-3 8-7 0-4 9-8 0-3 6-7 0-4 10-8 0-3 6-7 0-4 8-8 0-3 6-7 0z" fill="#fff"/>
+  <path d="M16 72q0-8 10-8h68q10 0 10 8v3q-4 7-7 0-4 9-9 0-4 7-8 0-4 10-9 0-4 7-8 0-4 9-9 0-4 7-8 0-4 8-8 0-3 6-6 0z" fill="#fff8fb"/>
+  <g fill="#7b5be0"><rect x="30" y="86" width="5" height="2" rx="1" transform="rotate(30 32 87)"/><rect x="74" y="88" width="5" height="2" rx="1" transform="rotate(-25 76 89)"/></g>
+  <g fill="#33a06a"><rect x="50" y="89" width="5" height="2" rx="1" transform="rotate(-40 52 90)"/><rect x="92" y="85" width="5" height="2" rx="1"/></g>
+  <g fill="#3f6fd8"><rect x="40" y="91" width="5" height="2" rx="1" transform="rotate(15 42 92)"/><rect x="64" y="85" width="5" height="2" rx="1" transform="rotate(60 66 86)"/></g>
+  <g><circle cx="38" cy="38" r="6" fill="#e2384f"/><path d="M35 33l3 2 3-2-1 3h-4z" fill="#33a06a"/><circle cx="82" cy="38" r="6" fill="#e2384f"/><path d="M79 33l3 2 3-2-1 3h-4z" fill="#33a06a"/></g>
+  <rect x="56" y="16" width="8" height="24" rx="3" fill="#6b9cf2"/>
+  <path d="M56 22l8-4M56 29l8-4M56 36l8-4" stroke="#fff" stroke-width="2"/>
+  <path class="flame" d="M60 2c5 6 6 9 3 12a4 4 0 0 1-6 0c-3-3-1-7 3-12z" fill="#f6a65a"/>
+  <path class="flame" d="M60 7c2 3 3 5 1 7a2 2 0 0 1-3 0c-1-2 0-4 2-7z" fill="#ffe066"/>
+  <g class="spark" fill="#f6a65a"><path d="M14 30l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M104 22l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>
+ </svg>
  <div class="brand"><div class="logo">🎂</div><h1>Калькулятор <span>кондитера</span></h1></div>
  <div class="sub">Себестоимость, цена торта и заказы. В полной версии всё сохраняется на вашем телефоне и работает без интернета.</div>
 </header>
@@ -166,7 +222,7 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
  <div class="card">
   <h2>Сколько стоит торт</h2>
   <div class="grid">
-   <div><label>Торт (рецепт)</label><select id="c-rec"></select><button class="link" id="c-newrec" type="button">+ Добавить свой торт</button></div>
+   <div style="grid-column:span 2"><label>Торт (рецепт)</label><select id="c-rec"></select><button class="link" id="c-newrec" type="button">+ Добавить свой торт</button></div>
    <div><label>Вес торта, кг</label><input id="c-kg" type="number" step="0.1" min="0.1" value="2"></div>
    <div><label>Декор, ягоды, топперы, ₽</label><input id="c-decor" type="number" min="0" value="300"></div>
    <div><label>Коробка, подложка, ₽</label><input id="c-box" type="number" min="0"></div>
@@ -239,6 +295,7 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
    <div><label>Название</label><input id="rc-name"></div>
    <div><label>Выход готового, г</label><input id="rc-yield" type="number"></div>
   </div>
+  <label style="margin-top:10px">Картинка торта</label><div class="chips" id="rc-ic"></div>
   <div class="wide" style="margin-top:10px">
   <table class="mob-stack"><thead><tr><th>Продукт</th><th>Количество</th><th>Цена упаковки, ₽</th><th class="num">Стоимость</th><th></th></tr></thead><tbody id="rc-rows"></tbody></table>
   </div>
@@ -315,8 +372,15 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
 </section>
 </main>
 <footer>Калькулятор кондитера · демо-версия · Дмитрий, Петрозаводск. Сделать сайт с витриной тортов и приёмом заказов можно по запросу.</footer>
+<div class="modal hide" id="cm"><div class="mbox">
+ <div class="mhead"><span class="pic big" id="cm-pic">🎂</span><div><h2>Новый торт</h2><span class="hint">Потом добавите в него продукты</span></div></div>
+ <div style="margin-bottom:10px"><label>Название</label><input id="cm-n" placeholder="Например, Наполеон"></div>
+ <div style="margin-bottom:10px"><label>Сколько весит готовый торт по рецепту, г</label><input id="cm-y" type="number" value="1500"></div>
+ <label>Картинка</label><div class="chips" id="cm-ic"></div>
+ <div class="row" style="margin-top:16px"><button class="btn" id="cm-ok">Создать торт</button><button class="btn g" id="cm-no">Отмена</button></div>
+</div></div>
 <div class="modal hide" id="pm"><div class="mbox">
- <h2>Новый продукт</h2>
+ <div class="mhead"><span class="pic big" id="pm-pic">🧺</span><h2>Новый продукт</h2></div>
  <p class="hint">Как на упаковке из магазина: сколько в ней и сколько она стоит.</p>
  <div style="margin-bottom:10px"><label>Название</label><input id="pm-n" placeholder="Например, маскарпоне"></div>
  <div class="grid">
@@ -352,10 +416,10 @@ var DEF={
   {id:'p16',n:'Ванильный сахар',q:10,u:'г',p:20}
  ],
  recipes:[
-  {id:'r1',n:'Красный бархат',y:2000,it:[['p1',380],['p2',330],['p3',4],['p11',300],['p9',300],['p8',20],['p10',12],['p12',3],['p6',600],['p4',100],['p7',120]]},
-  {id:'r2',n:'Шоколадный с ганашем',y:2000,it:[['p1',300],['p2',300],['p3',5],['p8',70],['p9',250],['p11',150],['p10',10],['p5',400],['p14',300],['p4',80]]},
-  {id:'r3',n:'Медовик на сгущёнке',y:1800,it:[['p1',500],['p2',150],['p3',3],['p4',100],['p13',760],['p5',300]]},
-  {id:'r4',n:'Ванильный бисквит с ягодами',y:1800,it:[['p1',300],['p2',300],['p3',6],['p16',10],['p10',8],['p6',500],['p5',300],['p7',120],['p15',300]]}
+  {id:'r1',ic:'🍰',n:'Красный бархат',y:2000,it:[['p1',380],['p2',330],['p3',4],['p11',300],['p9',300],['p8',20],['p10',12],['p12',3],['p6',600],['p4',100],['p7',120]]},
+  {id:'r2',ic:'🍫',n:'Шоколадный с ганашем',y:2000,it:[['p1',300],['p2',300],['p3',5],['p8',70],['p9',250],['p11',150],['p10',10],['p5',400],['p14',300],['p4',80]]},
+  {id:'r3',ic:'🍯',n:'Медовик на сгущёнке',y:1800,it:[['p1',500],['p2',150],['p3',3],['p4',100],['p13',760],['p5',300]]},
+  {id:'r4',ic:'🍓',n:'Ванильный бисквит с ягодами',y:1800,it:[['p1',300],['p2',300],['p3',6],['p16',10],['p10',8],['p6',500],['p5',300],['p7',120],['p15',300]]}
  ],
  orders:[]
 };
@@ -383,7 +447,13 @@ document.querySelectorAll('nav button').forEach(function(b){b.onclick=function()
 
 /* CALC */
 var calcTouched={box:false,hours:false};
-function fillRecSelect(sel,cur){sel.innerHTML=S.recipes.map(function(r){return '<option value="'+r.id+'">'+esc(r.n)+'</option>'}).join('');if(cur)sel.value=cur}
+var PICS=[[/мук/,'🌾'],[/пудр/,'❄️'],[/сахар/,'🍬'],[/яйц|яйк|желт|белк/,'🥚'],[/масло слив|сливочн/,'🧈'],[/масло|растит/,'🫒'],[/сливк|молок|кефир|йогурт|сметан|ряженк/,'🥛'],[/сыр|творог|творож|маскарпоне/,'🧀'],[/какао|шокол/,'🍫'],[/разрыхл|сод|соль/,'🧂'],[/красит/,'🎨'],[/сгущ/,'🥫'],[/клубн|ягод|малин|смород|черник|голубик/,'🍓'],[/вишн|черешн/,'🍒'],[/ванил/,'🌼'],[/орех|миндал|фундук|арахис|фисташ/,'🥜'],[/мёд|мед/,'🍯'],[/банан/,'🍌'],[/лимон|апельс|цитрус/,'🍋'],[/кокос/,'🥥'],[/желат|агар/,'🍮'],[/коробк|подложк|упаков/,'📦'],[/топпер|декор|посып/,'✨'],[/кофе/,'☕'],[/яблок/,'🍎'],[/мак/,'⚫']];
+function picOf(n){n=(n||'').toLowerCase();for(var i=0;i<PICS.length;i++)if(PICS[i][0].test(n))return PICS[i][1];return '🧺'}
+function hueOf(n){var h=0;for(var i=0;i<(n||'').length;i++)h=(h*31+n.charCodeAt(i))%360;return h}
+function picHtml(n,ic){return '<span class="pic" style="--pb:hsl('+hueOf(n)+' 80% 94%)">'+(ic||picOf(n))+'</span>'}
+var CAKEICONS=['🎂','🍰','🧁','🍫','🍓','🍋','🍒','🥥','🍯','☕'];
+function fillRecSelect(sel,cur){sel.innerHTML=S.recipes.map(function(r){return '<option value="'+r.id+'">'+(r.ic||'🎂')+' '+esc(r.n)+'</option>'}).join('');if(cur)sel.value=cur}
+var flashLast=false;function doFlash(tb){if(!flashLast)return;flashLast=false;var rows=$(tb).querySelectorAll('tr');if(rows.length){var r=rows[rows.length-1];r.classList.add('flash');r.scrollIntoView({block:'center',behavior:'smooth'})}}
 function calc(){
  var r=rec($('c-rec').value);if(!r){return}
  var kg=num('c-kg');
@@ -468,7 +538,8 @@ function renderRecipes(){
  fillRecSelect($('rc-sel'),curRec);var r=rec(curRec);
  $('rc-name').value=r.n;$('rc-yield').value=r.y;
  var opts=S.products.map(function(p){return '<option value="'+p.id+'">'+esc(p.n)+'</option>'}).join('');
- $('rc-rows').innerHTML=r.it.map(function(x,i){var p=prod(x[0]);return '<tr><td class="first"><select data-i="'+i+'" data-k="p">'+opts.replace('value="'+x[0]+'"','value="'+x[0]+'" selected')+'</select></td>'+
+ $('rc-ic').innerHTML=CAKEICONS.map(function(c){return '<button type="button" class="'+((r.ic||'🎂')===c?'on':'')+'" data-c="'+c+'">'+c+'</button>'}).join('');
+ $('rc-rows').innerHTML=r.it.map(function(x,i){var p=prod(x[0]);return '<tr><td class="first"><div class="cellpic">'+picHtml(p?p.n:'')+'<select data-i="'+i+'" data-k="p">'+opts.replace('value="'+x[0]+'"','value="'+x[0]+'" selected')+'</select></div></td>'+
   '<td data-l="Количество"><div class="row nowrap"><input type="number" data-i="'+i+'" data-k="q" value="'+x[1]+'" style="width:90px"><span class="hint" style="margin:0">'+(p?p.u:'')+'</span></div></td>'+
   '<td data-l="'+(p?'Цена за '+p.q+' '+p.u+', ₽':'Цена, ₽')+'"><input type="number" data-i="'+i+'" data-k="pp" value="'+(p?p.p:0)+'" style="width:100px"></td>'+
   '<td class="num" data-l="Стоимость">'+rub(unitPrice(p)*x[1])+'</td><td class="del"><button class="x" data-i="'+i+'" data-k="del">×</button></td></tr>'}).join('');
@@ -483,21 +554,32 @@ $('rc-rows').addEventListener('input',function(e){var t=e.target,i=+t.dataset.i,
   [].forEach.call($('rc-rows').querySelectorAll('tr'),function(tr,j){var x=r.it[j];if(x&&x[0]===p.id){tr.querySelector('.num').textContent=rub(unitPrice(p)*x[1]);var inp=tr.querySelector('[data-k=pp]');if(inp!==t)inp.value=p.p}});recTotals();return}
  if(t.dataset.k==='q'){r.it[i][1]=parseFloat(t.value)||0;save();t.closest('tr').querySelector('.num').textContent=rub(unitPrice(prod(r.it[i][0]))*r.it[i][1]);recTotals()}});
 $('rc-rows').addEventListener('click',function(e){var t=e.target;if(t.dataset.k==='del'){rec(curRec).it.splice(+t.dataset.i,1);save();renderRecipes()}});
-$('rc-addrow').onclick=function(){rec(curRec).it.push([S.products[0].id,100]);save();renderRecipes()};
-$('rc-new').onclick=function(){var r={id:uid(),n:'Мой торт',y:1000,it:[]};S.recipes.push(r);curRec=r.id;save();renderRecipes();$('rc-name').select()};
+$('rc-addrow').onclick=function(){rec(curRec).it.push([S.products[0].id,100]);save();flashLast=true;renderRecipes();doFlash('rc-rows')};
+$('rc-ic').onclick=function(e){var b=e.target.closest('button');if(!b)return;rec(curRec).ic=b.dataset.c;save();renderRecipes()};
+var cmIc='🎂';
+function cmChips(){$('cm-ic').innerHTML=CAKEICONS.map(function(c){return '<button type="button" class="'+(cmIc===c?'on':'')+'" data-c="'+c+'">'+c+'</button>'}).join('');$('cm-pic').textContent=cmIc}
+$('cm-ic').onclick=function(e){var b=e.target.closest('button');if(!b)return;cmIc=b.dataset.c;cmChips()};
+function openCM(){cmIc='🎂';$('cm-n').value='';$('cm-y').value=1500;cmChips();$('cm').classList.remove('hide');setTimeout(function(){$('cm-n').focus()},80)}
+$('cm-no').onclick=function(){$('cm').classList.add('hide')};
+$('cm').onclick=function(e){if(e.target===this)this.classList.add('hide')};
+$('cm-ok').onclick=function(){var n=$('cm-n').value.trim();if(!n){toast('Впишите название торта');$('cm-n').focus();return}
+ var r={id:uid(),n:n,y:parseFloat($('cm-y').value)||1000,it:[],ic:cmIc};S.recipes.push(r);curRec=r.id;save();$('cm').classList.add('hide');
+ document.querySelector('nav button[data-t=recipes]').click();toast(cmIc+' Торт «'+n+'» создан. Добавьте продукты');setTimeout(function(){$('rc-edit').scrollIntoView({behavior:'smooth',block:'start'})},150)};
+$('rc-new').onclick=openCM;
+$('pm-n').addEventListener('input',function(){$('pm-pic').textContent=picOf(this.value)});
 $('rc-copy').onclick=function(){var s=rec(curRec),r=JSON.parse(JSON.stringify(s));r.id=uid();r.n=s.n+' (копия)';S.recipes.push(r);curRec=r.id;save();renderRecipes()};
 $('rc-del').onclick=function(){if(S.recipes.length<2){toast('Нужен хотя бы один рецепт');return}if(!confirm('Удалить рецепт «'+rec(curRec).n+'»?'))return;S.recipes=S.recipes.filter(function(r){return r.id!==curRec});curRec=null;save();renderRecipes()};
 
 /* PRODUCTS */
 function renderProducts(){
  $('p-rows').innerHTML=S.products.map(function(p,i){var per=p.u==='шт'?unitPrice(p):unitPrice(p)*1000;
-  return '<tr><td class="first"><input data-i="'+i+'" data-k="n" value="'+esc(p.n)+'"></td><td data-l="В упаковке"><input type="number" data-i="'+i+'" data-k="q" value="'+p.q+'"></td>'+
+  return '<tr><td class="first"><div class="cellpic">'+picHtml(p.n)+'<input data-i="'+i+'" data-k="n" value="'+esc(p.n)+'"></div></td><td data-l="В упаковке"><input type="number" data-i="'+i+'" data-k="q" value="'+p.q+'"></td>'+
   '<td data-l="Ед."><select data-i="'+i+'" data-k="u"><option'+(p.u==='г'?' selected':'')+'>г</option><option'+(p.u==='мл'?' selected':'')+'>мл</option><option'+(p.u==='шт'?' selected':'')+'>шт</option></select></td>'+
   '<td data-l="Цена упак., ₽"><input type="number" data-i="'+i+'" data-k="p" value="'+p.p+'"></td><td class="num" data-l="За 1 кг/л/шт">'+rub(per)+'</td><td class="del"><button class="x" data-i="'+i+'" data-k="del">×</button></td></tr>'}).join('')}
 $('p-rows').addEventListener('input',function(e){var t=e.target,p=S.products[+t.dataset.i];if(!p||!t.dataset.k||t.dataset.k==='del')return;
  p[t.dataset.k]=(t.dataset.k==='n'||t.dataset.k==='u')?t.value:(parseFloat(t.value)||0);save();
  var per=p.u==='шт'?unitPrice(p):unitPrice(p)*1000;t.closest('tr').querySelector('.num').textContent=rub(per)});
-$('p-rows').addEventListener('change',function(e){if(e.target.dataset.k==='u')renderProducts()});
+$('p-rows').addEventListener('change',function(e){var k=e.target.dataset.k;if(k==='u'||k==='n')renderProducts()});
 $('p-rows').addEventListener('click',function(e){var t=e.target;if(t.dataset.k!=='del')return;var p=S.products[+t.dataset.i];
  var used=S.recipes.filter(function(r){return r.it.some(function(x){return x[0]===p.id})});
  if(used.length){toast('Продукт есть в рецепте «'+used[0].n+'»');return}
@@ -508,9 +590,9 @@ $('pm-no').onclick=function(){$('pm').classList.add('hide')};
 $('pm').onclick=function(e){if(e.target===this)this.classList.add('hide')};
 $('pm-ok').onclick=function(){var n=$('pm-n').value.trim();if(!n){toast('Впишите название');return}
  var p={id:uid(),n:n,q:parseFloat($('pm-q').value)||1,u:$('pm-u').value,p:parseFloat($('pm-p').value)||0};S.products.push(p);save();$('pm').classList.add('hide');toast('Продукт «'+n+'» добавлен');if(pmCb)pmCb(p)};
-$('p-add').onclick=function(){openPM(function(){renderProducts()})};
-$('rc-newprod').onclick=function(){openPM(function(p){rec(curRec).it.push([p.id,100]);save();renderRecipes()})};
-$('c-newrec').onclick=function(){document.querySelector('nav button[data-t=recipes]').click();$('rc-new').click()};
+$('p-add').onclick=function(){openPM(function(){flashLast=true;renderProducts();doFlash('p-rows')})};
+$('rc-newprod').onclick=function(){openPM(function(p){rec(curRec).it.push([p.id,100]);save();flashLast=true;renderRecipes();doFlash('rc-rows')})};
+$('c-newrec').onclick=openCM;
 
 /* SETTINGS */
 var smap={'s-rate':'rate','s-markup':'markup','s-util':'util','s-box':'box','s-hpk':'hpk','s-round':'round'};
