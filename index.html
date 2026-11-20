@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Калькулятор кондитера — демо</title>
+<title>Калькулятор кондитера</title>
 <style>
 :root{--bg:#fbf8f5;--card:#fff;--ink:#2b2522;--mute:#8a7f78;--line:#ece4dd;--acc:#c0587e;--acc2:#f6e3ea;--ok:#3f8f5a;--warn:#c27a1c;--bad:#c23b3b}
 *{box-sizing:border-box}
@@ -51,7 +51,6 @@ td input,td select{padding:6px 8px}
 .stat span{color:var(--mute);font-size:12px}
 .hide{display:none}
 .wide{overflow-x:auto}
-.demo{background:linear-gradient(135deg,#3a2a30,#5a3646);color:#fff;padding:10px 16px;font-size:14px}.demo .in{max-width:900px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.demo a{background:#fff;color:var(--acc);padding:8px 14px;border-radius:10px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .about .steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.about .steps div{background:#fdf1f4;border-radius:14px;padding:12px;font-size:14px;color:var(--mute)}.about .steps b{display:block;color:var(--ink);margin-bottom:3px}
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
 .toast.on{opacity:1}
@@ -97,13 +96,18 @@ main>section:not(.hide)>.card:nth-child(4){animation-delay:.18s}
 tr.flash{animation:flash 1.4s ease}
 @keyframes flash{0%{background:#fff1c9;transform:translateX(-8px)}40%{background:#fff6dc;transform:none}100%{background:transparent}}
 .btn:active,.chips button:active{transform:scale(.95)}
-.demo{background:linear-gradient(135deg,#3a2a30,#5a3646);color:#fff;padding:10px 16px;font-size:14px}.demo .in{max-width:900px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.demo a{background:#fff;color:var(--acc);padding:8px 14px;border-radius:10px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .about .steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.about .steps div{background:#fdf1f4;border-radius:14px;padding:12px;font-size:14px;color:var(--mute)}.about .steps b{display:block;color:var(--ink);margin-bottom:3px}
 .toast{border-radius:14px;background:linear-gradient(135deg,#3a2a30,#5a3646);box-shadow:0 10px 24px rgba(0,0,0,.25);transform:translate(-50%,20px);transition:opacity .25s,transform .3s cubic-bezier(.2,1.3,.4,1);max-width:calc(100% - 32px);text-align:center}
 .toast.on{transform:translate(-50%,0)}
 .logo{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
 @keyframes pop{from{transform:scale(.4) rotate(-20deg);opacity:0}}
 @media (max-width:600px){.cakeart{width:78px;right:10px;top:12px}header .brand,header .sub{padding-right:76px}}
+.trial{background:linear-gradient(135deg,#3a2a30,#5a3646);color:#fff;padding:9px 16px;font-size:14px}
+.trial .in{max-width:900px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.btn.w.s{padding:7px 12px}
+nav .in{scrollbar-width:none}nav .in::-webkit-scrollbar{display:none}
+.shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#lock .mbox{max-width:440px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* --- разноцветность --- */
 nav button[data-t=orders].on{background:linear-gradient(135deg,#6b9cf2,#3f6fd8);box-shadow:0 6px 14px rgba(63,111,216,.35)}
@@ -172,7 +176,6 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
 </style>
 </head>
 <body>
-<div class="demo"><div class="in"><span><b>Демо-версия.</b> Попробуйте всё: добавьте свой торт и продукты, посчитайте цену, внесите заказ. После обновления страницы данные сбросятся.</span><a href="https://vk.me/dimmelnikov2012" target="_blank" rel="noopener">Купить полную · 990 ₽</a></div></div>
 <header>
  <svg class="cakeart" viewBox="0 0 120 112" aria-hidden="true">
   <ellipse cx="60" cy="103" rx="52" ry="7" fill="#f1d3dd"/>
@@ -193,7 +196,7 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
   <g class="spark" fill="#f6a65a"><path d="M14 30l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M104 22l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>
  </svg>
  <div class="brand"><div class="logo">🎂</div><h1>Калькулятор <span>кондитера</span></h1></div>
- <div class="sub">Себестоимость, цена торта и заказы. В полной версии всё сохраняется на вашем телефоне и работает без интернета.</div>
+ <div class="sub">Себестоимость, цена торта и заказы. Ваши данные хранятся только на вашем телефоне.</div>
 </header>
 <nav><div class="in">
  <button data-t="calc" class="on"><i>🧮</i>Расчёт цены</button>
@@ -205,18 +208,18 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
 </div></nav>
 <main>
 <div class="card about" id="about">
- <button class="x" style="float:right" onclick="this.parentNode.remove()" title="Скрыть">×</button>
+ <button class="x" style="float:right" onclick="try{localStorage.setItem('konditer_about','1')}catch(e){}this.parentNode.remove()" title="Скрыть">×</button>
  <h2>Что это за программа</h2>
- <p class="hint" style="font-size:14px">Для домашних кондитеров, которые пекут торты на заказ. Она делает три вещи:</p>
+ <p class="hint" style="font-size:14px">Для домашних кондитеров, которые пекут торты на заказ:</p>
  <div class="steps">
   <div><b>1. Считает себестоимость</b>Сколько вам на самом деле стоит торт: продукты, коробка, декор, свет, газ и ваше время.</div>
   <div><b>2. Подсказывает цену</b>Чтобы вы не продавали в ноль и знали, сколько брать за килограмм.</div>
-  <div><b>3. Ведёт заказы</b>Когда отдавать торт, кто внёс предоплату и сколько ещё получить. Готовый текст подтверждения для клиента одной кнопкой.</div>
-  <div><b>✨ И ещё фишки</b>Сколько кг торта на число гостей, пересчёт рецепта под другую форму, список покупок по заказам, итоги месяца: сколько осталось вам.</div>
+  <div><b>3. Ведёт заказы</b>Когда отдавать торт, кто внёс предоплату и сколько ещё получить. Текст подтверждения для клиента одной кнопкой.</div>
+  <div><b>✨ И ещё фишки</b>Торт на число гостей, пересчёт рецепта под форму, список покупок, итоги месяца.</div>
  </div>
- <p class="hint" style="font-size:14px;margin:12px 0 0"><b>Как попробовать:</b> во вкладке «Расчёт цены» выберите торт и вес. Свои торты добавляйте во вкладке «Торты», свои продукты и цены во вкладке «Продукты».</p>
+ <p class="hint" style="font-size:14px;margin:12px 0 0"><b>С чего начать:</b> во вкладке «Продукты» впишите свои цены, в «Тортах» добавьте свои рецепты, а в «Расчёте цены» выберите торт и вес.</p>
 </div>
-
+<script>try{if(localStorage.getItem('konditer_about'))document.getElementById('about').remove()}catch(e){}</script>
 <!-- РАСЧЁТ -->
 <section id="t-calc">
  <div class="card">
@@ -368,10 +371,18 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
    <div class="srow"><span>Округлять цену до, ₽<small>Чтобы цена была красивой</small></span><select id="s-round"><option>10</option><option>50</option><option>100</option></select></div>
   </div>
  </div>
- <div class="card"><h2>Полная версия — 990 ₽ один раз</h2><p class="hint">Без подписки. Всё, что в демо, плюс: торты, продукты и заказы сохраняются, заказов сколько угодно, резервная копия в файл, работает без интернета. Файл присылаем сразу после оплаты.</p><a class="btn" style="text-decoration:none;display:inline-block" href="https://vk.me/dimmelnikov2012" target="_blank" rel="noopener">Написать и купить</a></div>
+ <div class="card">
+  <h2>Резервная копия</h2>
+  <p class="hint">Данные лежат только в этом браузере. Раз в неделю сохраняйте копию в файл, тогда при смене телефона ничего не потеряется.</p>
+  <div class="row">
+   <button class="btn" id="s-export">Сохранить копию</button>
+   <label class="btn g" style="margin:0;color:var(--ink);font-size:15px">Загрузить копию<input type="file" id="s-import" accept=".json" class="hide"></label>
+   <button class="btn g" id="s-reset">Сбросить всё</button>
+  </div>
+ </div>
 </section>
 </main>
-<footer>Калькулятор кондитера · демо-версия · Дмитрий, Петрозаводск. Сделать сайт с витриной тортов и приёмом заказов можно по запросу.</footer>
+<footer>Калькулятор кондитера · Дмитрий, Петрозаводск. Сделать сайт с витриной тортов и приёмом заказов можно по запросу.</footer>
 <div class="modal hide" id="cm"><div class="mbox">
  <div class="mhead"><span class="pic big" id="cm-pic">🎂</span><div><h2>Новый торт</h2><span class="hint">Потом добавите в него продукты</span></div></div>
  <div style="margin-bottom:10px"><label>Название</label><input id="cm-n" placeholder="Например, Наполеон"></div>
@@ -389,6 +400,14 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
   <div><label>Цена упаковки, ₽</label><input id="pm-p" type="number"></div>
  </div>
  <div class="row" style="margin-top:14px"><button class="btn" id="pm-ok">Добавить</button><button class="btn g" id="pm-no">Отмена</button></div>
+</div></div>
+<div class="modal hide" id="lock"><div class="mbox" style="text-align:center">
+ <div style="font-size:46px">🎂</div>
+ <h2 id="lk-title">Пробный период закончился</h2>
+ <p class="hint" style="font-size:14px">Все ваши торты, продукты и заказы сохранены. Чтобы продолжить, активируйте программу: <b>990 ₽ один раз, навсегда</b>.</p>
+ <div class="res" style="text-align:left;font-size:14px">1. Напишите Дмитрию в ВК и назовите номер устройства:<div class="row" style="margin-top:8px"><b id="lk-dev" style="font-size:20px;letter-spacing:1px"></b><button class="btn g s" id="lk-copy">Скопировать</button></div>2. После оплаты вы получите код. Введите его ниже.</div>
+ <input id="lk-code" placeholder="Код активации, например ABCD-EF12" style="text-align:center;font-size:18px;letter-spacing:1px;text-transform:uppercase">
+ <div class="row" style="margin-top:12px;justify-content:center"><button class="btn" id="lk-ok">Активировать</button><a class="btn g" id="lk-vk" href="https://vk.me/dimmelnikov2012" target="_blank" rel="noopener" style="text-decoration:none">Написать Дмитрию</a><button class="btn g hide" id="lk-close">Позже</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
 
@@ -424,10 +443,10 @@ var DEF={
  orders:[]
 };
 var S;
-function load(){S=null;
+function load(){try{var raw=localStorage.getItem(KEY);S=raw?JSON.parse(raw):null}catch(e){S=null}
  if(!S||!S.products){S=JSON.parse(JSON.stringify(DEF))}
  S.set=Object.assign({},DEF.set,S.set||{});S.orders=S.orders||[]}
-function save(){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function $(id){return document.getElementById(id)}
 function rub(v){return Math.round(v).toLocaleString('ru-RU')+' ₽'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -490,7 +509,6 @@ $('o-open').onclick=function(){resetOrderForm();showForm(true);$('o-date').focus
 $('o-cancel').onclick=resetOrderForm;
 $('o-save').onclick=function(){
  if(!$('o-date').value){toast('Укажите дату выдачи');return}
- if(!editing&&S.orders.length>=3){toast('В демо до 3 заказов. В полной версии без ограничений');return}
  var o={id:editing||uid(),date:$('o-date').value,time:$('o-time').value,name:$('o-name').value.trim(),contact:$('o-contact').value.trim(),cake:$('o-cake').value.trim(),kg:num('o-kg'),price:num('o-price'),pre:num('o-pre'),deliv:$('o-deliv').value,note:$('o-note').value.trim(),done:false};
  if(editing){S.orders=S.orders.map(function(x){if(x.id===editing){o.done=x.done;return o}return x})}else S.orders.push(o);
  save();resetOrderForm();renderOrders();toast('Заказ сохранён')};
@@ -598,6 +616,10 @@ $('c-newrec').onclick=openCM;
 var smap={'s-rate':'rate','s-markup':'markup','s-util':'util','s-box':'box','s-hpk':'hpk','s-round':'round'};
 function renderSettings(){for(var k in smap)$(k).value=S.set[smap[k]]}
 Object.keys(smap).forEach(function(k){$(k).addEventListener('input',function(){S.set[smap[k]]=parseFloat(this.value)||0;save()})});
+$('s-export').onclick=function(){var b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='konditer-kopiya-'+today()+'.json';document.body.appendChild(a);a.click();a.remove()};
+$('s-import').onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var d=JSON.parse(rd.result);if(!d.products||!d.recipes)throw 0;S=d;load2();save();toast('Копия загружена');renderAll()}catch(e){toast('Это не файл копии')}};rd.readAsText(f);this.value=''};
+function load2(){S.set=Object.assign({},DEF.set,S.set||{});S.orders=S.orders||[]}
+$('s-reset').onclick=function(){if(!confirm('Удалить все продукты, рецепты и заказы и вернуть примеры?'))return;S=JSON.parse(JSON.stringify(DEF));save();renderAll();toast('Сброшено')};
 
 /* COPY / CLIENT TEXT */
 function copyText(t,msg){function fb(){var a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy');toast(msg||'Скопировано')}catch(e){prompt('Скопируйте текст:',t)}a.remove()}
@@ -650,9 +672,30 @@ function renderTools(){if(!$('m-m').value)$('m-m').value=today().slice(0,7);var 
 
 function render(t){if(t==='calc'){var c=$('c-rec').value;fillRecSelect($('c-rec'),c);calc()}if(t==='orders'){$('o-cakes').innerHTML=S.recipes.map(function(r){return '<option value="'+esc(r.n)+'">'}).join('');renderOrders()}if(t==='recipes')renderRecipes();if(t==='products')renderProducts();if(t==='tools')renderTools();if(t==='settings')renderSettings()}
 function renderAll(){['calc','orders','recipes','products','tools','settings'].forEach(render)}
-load();(function(){function ds(n){var x=new Date();x.setDate(x.getDate()+n);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10)}
-S.orders=[{id:'d1',date:ds(1),time:'12:00',name:'Анна (пример)',contact:'+7 900 000-00-00',cake:'Красный бархат',kg:2,price:3200,pre:1000,deliv:'Самовывоз',note:'Надпись «С днём рождения!», ягоды',done:false},
-{id:'d2',date:ds(3),time:'17:30',name:'Ольга (пример)',contact:'vk.com/...',cake:'Медовик на сгущёнке',kg:1.5,price:2100,pre:0,deliv:'Доставка',note:'Без орехов',done:false}]})();renderAll();
+load();renderAll();
+
+/* TRIAL / LICENSE */
+(function(){var SECRET='tc26-dm-petroz-990',DAYS=7,AB='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h}
+function enc(n,len){var s='';for(var i=0;i<len;i++){s+=AB[n%32];n=Math.floor(n/32)}return s}
+function dev(){var d=ls('konditer_dev');if(!d){var a=new Uint32Array(2);try{crypto.getRandomValues(a)}catch(e){a[0]=Date.now();a[1]=Math.random()*4e9}d=enc(a[0],4)+'-'+enc(a[1],4);ls('konditer_dev',d)}return d}
+function codeFor(id){return enc(fnv(SECRET+id),4)+'-'+enc(fnv(id+'|'+SECRET),4)}
+function norm(c){c=(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return c.slice(0,4)+'-'+c.slice(4,8)}
+function licensed(){return ls('konditer_lic')===codeFor(dev())}
+var t0=+ls('konditer_t0');if(!t0){t0=Date.now();ls('konditer_t0',String(t0))}
+var left=DAYS-Math.floor((Date.now()-t0)/864e5);
+var bar=document.createElement('div');bar.className='trial';document.body.insertBefore(bar,document.body.firstChild);
+function paint(){if(licensed()){bar.remove();$('lock').classList.add('hide');return}
+ bar.innerHTML='<div class="in"><span>🎁 <b>Пробный период:</b> '+(left>0?'осталось '+left+' '+(left===1?'день':left<5?'дня':'дней'):'закончился')+'. Потом 990 ₽ один раз, навсегда.</span><button class="btn w s" id="tb-buy">Активировать</button></div>';
+ $('tb-buy').onclick=function(){openLock(true)};
+ if(left<=0)openLock(false)}
+function openLock(canClose){$('lk-dev').textContent=dev();$('lk-title').textContent=canClose?'Активация программы':'Пробный период закончился';$('lk-close').classList.toggle('hide',!canClose);$('lock').dataset.cc=canClose?'1':'';$('lock').classList.remove('hide')}
+$('lk-close').onclick=function(){$('lock').classList.add('hide')};
+$('lk-copy').onclick=function(){copyText('Здравствуйте! Хочу купить калькулятор кондитера. Номер устройства: '+dev(),'Номер скопирован, отправьте его Дмитрию')};
+$('lk-vk').onclick=function(){copyText('Здравствуйте! Хочу купить калькулятор кондитера. Номер устройства: '+dev(),'Номер скопирован — вставьте его в сообщение')};
+$('lk-ok').onclick=function(){var c=norm($('lk-code').value);if(c===codeFor(dev())){ls('konditer_lic',c);toast('🎉 Спасибо! Программа активирована навсегда');paint()}else{toast('Код не подходит. Проверьте его или напишите Дмитрию');$('lk-code').classList.add('shake');setTimeout(function(){$('lk-code').classList.remove('shake')},500)}};
+paint();})();
 })();
 </script>
 </body>
