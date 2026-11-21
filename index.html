@@ -189,6 +189,59 @@ main>section:not(.hide)>*:nth-child(4){animation-delay:.12s}
  .mob-stack td.num{text-align:left;padding-bottom:8px;font-weight:500}
  .mob-stack thead{display:none}
 }
+/* ===== цвет и фон (по просьбе: ярче, как раньше) ===== */
+:root{--c-calc:#d0577f;--c-orders:#4f7fe0;--c-recipes:#e98a3c;--c-products:#3fa874;--c-tools:#8a6ae6;--c-settings:#2fa3ab}
+body{background:linear-gradient(180deg,rgba(252,226,236,.95) 0%,rgba(253,240,232,.75) 260px,rgba(246,242,236,.55) 560px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23c0587e' stroke-opacity='.14' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='24' cy='30' r='6'/%3E%3Ccircle cx='35' cy='24' r='5'/%3E%3Cpath d='M30 18c2-6 7-8 11-8'/%3E%3Cpath d='M150 26l4 9 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z'/%3E%3Cpath d='M52 128h40v22H52zM52 139h40M58 128v-8a14 14 0 0 1 28 0v8M72 106v-6'/%3E%3Cpath d='M160 120c0-12 22-12 22 0l-4 26h-14zM163 120c2-8 14-10 16 0'/%3E%3Cpath d='M110 70l3 3m0-3l-3 3M200 80l3 3m0-3l-3 3M20 190l3 3m0-3l-3 3M130 200l3 3m0-3l-3 3'/%3E%3Ccircle cx='100' cy='190' r='3'/%3E%3Ccircle cx='190' cy='180' r='2.5'/%3E%3Cpath d='M18 92l12-12 6 6-12 12zM30 80l8-8'/%3E%3C/g%3E%3C/svg%3E"),#f6f2ec;background-attachment:fixed}
+nav{background:rgba(252,240,242,.9)}
+.logo{background:linear-gradient(135deg,#d6638a,#a8325a);box-shadow:0 4px 12px rgba(173,53,87,.3)}
+h1{background:none}
+.cakeart{filter:drop-shadow(0 10px 16px rgba(192,88,126,.28))}
+
+/* вкладки: у каждой свой цвет */
+nav button[data-t=calc]{--c:var(--c-calc)}nav button[data-t=orders]{--c:var(--c-orders)}nav button[data-t=recipes]{--c:var(--c-recipes)}nav button[data-t=products]{--c:var(--c-products)}nav button[data-t=tools]{--c:var(--c-tools)}nav button[data-t=settings]{--c:var(--c-settings)}
+nav button i{color:var(--c)}
+nav button.on{background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 70%,#000));color:#fff;border-color:transparent;box-shadow:0 6px 14px color-mix(in srgb,var(--c) 35%,transparent)}
+nav button.on i{color:#fff}
+
+/* карточки разделов: цветная полоска сверху */
+#t-calc{--c:var(--c-calc)}#t-orders{--c:var(--c-orders)}#t-recipes{--c:var(--c-recipes)}#t-products{--c:var(--c-products)}#t-tools{--c:var(--c-tools)}#t-settings{--c:var(--c-settings)}
+main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33,28,.04),0 10px 28px color-mix(in srgb,var(--c) 12%,transparent)}
+.about{border-top:4px solid var(--c-calc);background:linear-gradient(135deg,#fffdfa 60%,#fdf0f4)}
+.about .steps div:nth-child(1){background:#fdeaf0}.about .steps div:nth-child(2){background:#fff1e3}.about .steps div:nth-child(3){background:#eaf1ff}.about .steps div:nth-child(4){background:#efe9ff}
+
+/* кнопки */
+.btn{background:linear-gradient(135deg,#d6638a,#a8325a);box-shadow:0 4px 12px rgba(173,53,87,.28)}
+.btn:hover{background:linear-gradient(135deg,#cc5680,#962c4a)}
+.btn.g,.btn.w{background:#fff;box-shadow:0 1px 3px rgba(43,33,28,.08)}
+.btn.g:hover,.btn.w:hover{background:#fdf3f6}
+.trial .btn.w{background:transparent;box-shadow:none}
+.trial{background:linear-gradient(135deg,#3a2a30,#5a3646)}
+
+/* расчёт: цветные точки и ценник */
+.kv span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:10px;background:var(--d,#ccc);vertical-align:1px}
+.kv:nth-of-type(1){--d:var(--c-recipes)}.kv:nth-of-type(2){--d:var(--c-tools)}.kv:nth-of-type(3){--d:var(--c-settings)}.kv:nth-of-type(4){--d:var(--c-orders)}.kv:nth-of-type(5){--d:var(--c-products)}.kv:nth-of-type(6){--d:var(--c-calc)}
+.pricebox{background:linear-gradient(135deg,#fff6e6,#fde7ee);border-color:rgba(208,87,127,.25);box-shadow:0 8px 20px rgba(208,87,127,.12)}
+
+/* заказы: разноцветные цифры */
+.stat{border-top:4px solid var(--s)}
+.stat:nth-child(1){--s:var(--c-orders);background:linear-gradient(145deg,#fff,#eef3ff)}.stat:nth-child(1) b{color:#3c66c4}
+.stat:nth-child(2){--s:var(--c-recipes);background:linear-gradient(145deg,#fff,#fff3e6)}.stat:nth-child(2) b{color:#c46a22}
+.stat:nth-child(3){--s:var(--c-products);background:linear-gradient(145deg,#fff,#eaf7f0)}.stat:nth-child(3) b{color:#2c8a5a}
+.stat:nth-child(4){--s:var(--c-calc);background:linear-gradient(145deg,#fff,#fdedf2)}.stat:nth-child(4) b{color:#b03a62}
+#o-list .order{border-left:4px solid #d9d0c8}
+#o-list .order:has(.pill.ok){border-left-color:var(--c-products)}#o-list .order:has(.pill.warn){border-left-color:var(--c-recipes)}#o-list .order:has(.pill.bad){border-left-color:#d9534f}
+.day span{color:#3c66c4}
+
+/* инструменты: у каждого свой цвет */
+.tools .card:nth-of-type(1){--c:var(--c-recipes)}.tools .card:nth-of-type(2){--c:var(--c-orders)}.tools .card:nth-of-type(3){--c:var(--c-products)}.tools .card:nth-of-type(4){--c:var(--c-tools)}
+.tools h2 span.ic{background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c)}
+.tools .res{background:color-mix(in srgb,var(--c) 9%,#fff)}
+.tools .res b.big2{color:color-mix(in srgb,var(--c) 85%,#000)}
+.tools .card:nth-of-type(4) .pricebox{background:linear-gradient(135deg,#f3eeff,#fde7ee)}
+
+/* картинки продуктов: цветные плитки */
+.pic{background:var(--pb,#fdf0f3);box-shadow:inset 0 -2px 0 rgba(0,0,0,.04)}
+.chips button{background:#fdf0f3}
 @media print{nav,.noprint,footer,header .sub,.trial{display:none}body{background:#fff}.card,.order{border:0;box-shadow:none}}
 </style>
 </head>
@@ -500,7 +553,7 @@ var calcTouched={box:false,hours:false};
 var PICS=[[/мук/,'🌾'],[/пудр/,'❄️'],[/сахар/,'🍬'],[/яйц|яйк|желт|белк/,'🥚'],[/масло слив|сливочн/,'🧈'],[/масло|растит/,'🫒'],[/сливк|молок|кефир|йогурт|сметан|ряженк/,'🥛'],[/сыр|творог|творож|маскарпоне/,'🧀'],[/какао|шокол/,'🍫'],[/разрыхл|сод|соль/,'🧂'],[/красит/,'🎨'],[/сгущ/,'🥫'],[/клубн|ягод|малин|смород|черник|голубик/,'🍓'],[/вишн|черешн/,'🍒'],[/ванил/,'🌼'],[/орех|миндал|фундук|арахис|фисташ/,'🥜'],[/мёд|мед/,'🍯'],[/банан/,'🍌'],[/лимон|апельс|цитрус/,'🍋'],[/кокос/,'🥥'],[/желат|агар/,'🍮'],[/коробк|подложк|упаков/,'📦'],[/топпер|декор|посып/,'✨'],[/кофе/,'☕'],[/яблок/,'🍎'],[/мак/,'⚫']];
 function picOf(n){n=(n||'').toLowerCase();for(var i=0;i<PICS.length;i++)if(PICS[i][0].test(n))return PICS[i][1];return '🧺'}
 function hueOf(n){var h=0;for(var i=0;i<(n||'').length;i++)h=(h*31+n.charCodeAt(i))%360;return h}
-function picHtml(n,ic){return '<span class="pic">'+(ic||picOf(n))+'</span>'}
+function picHtml(n,ic){return '<span class="pic" style="--pb:hsl('+hueOf(n)+' 75% 94%)">'+(ic||picOf(n))+'</span>'}
 var CAKEICONS=['🎂','🍰','🧁','🍫','🍓','🍋','🍒','🥥','🍯','☕'];
 function fillRecSelect(sel,cur){sel.innerHTML=S.recipes.map(function(r){return '<option value="'+r.id+'">'+(r.ic||'🎂')+' '+esc(r.n)+'</option>'}).join('');if(cur)sel.value=cur}
 var flashLast=false;function doFlash(tb){if(!flashLast)return;flashLast=false;var rows=$(tb).querySelectorAll('tr');if(rows.length){var r=rows[rows.length-1];r.classList.add('flash');r.scrollIntoView({block:'center',behavior:'smooth'})}}
