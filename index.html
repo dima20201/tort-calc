@@ -4,175 +4,192 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Калькулятор кондитера</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fbf8f5;--card:#fff;--ink:#2b2522;--mute:#8a7f78;--line:#ece4dd;--acc:#c0587e;--acc2:#f6e3ea;--ok:#3f8f5a;--warn:#c27a1c;--bad:#c23b3b}
+:root{
+ --bg:#f6f2ec;--surface:#fffdfa;--raised:#efe9e1;--line:rgba(43,33,28,.09);--line2:rgba(43,33,28,.15);
+ --ink:#2b211c;--ink2:#6b5e55;--mute:#998b81;
+ --acc:#ad3557;--acc-ink:#962c4a;--acc-soft:#f4e3e8;
+ --ok:#3d7a52;--ok-soft:#e6f0e8;--warn:#94590f;--warn-soft:#f6ebda;--bad:#ad3f39;--bad-soft:#f6e3e1;
+ --tag:#fbf3e4;--tag-line:rgba(150,110,40,.2);--tag-ink:#7a5a2a;
+ --r-ctl:10px;--r-card:16px;--r-panel:20px;
+ --ease:cubic-bezier(.2,.8,.2,1);
+ --sans:'Onest',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+ --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
-header{padding:18px 16px 8px;max-width:900px;margin:0 auto}
-h1{margin:0;font-size:22px;font-weight:700;letter-spacing:-.3px}
-h1 span{color:var(--acc)}
-.sub{color:var(--mute);font-size:13px;margin-top:2px}
-nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-nav .in{max-width:900px;margin:0 auto;display:flex;gap:4px;padding:6px 12px;overflow-x:auto}
-nav button{flex:0 0 auto;border:0;background:none;padding:9px 12px;border-radius:10px;font:inherit;color:var(--mute);cursor:pointer}
-nav button.on{background:var(--acc2);color:var(--acc);font-weight:600}
-main{max-width:900px;margin:0 auto;padding:14px 16px 60px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
-.card h2{margin:0 0 10px;font-size:17px}
-.hint{color:var(--mute);font-size:13px;margin:0 0 10px}
-label{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}
-input,select,textarea{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--acc2);border-color:var(--acc)}
-.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
-.btn{border:0;border-radius:10px;padding:9px 14px;font:inherit;cursor:pointer;background:var(--acc);color:#fff;font-weight:600}
-.btn.g{background:#f1ebe6;color:var(--ink);font-weight:500}
-.btn.s{padding:5px 9px;font-size:13px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.hide{display:none!important}
+
+/* шапка */
+header{max-width:960px;margin:0 auto;padding:24px 16px 16px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"brand art" "sub art";column-gap:16px;align-items:center;align-content:center}
+.brand{align-self:end}.sub{align-self:start}
+.brand{grid-area:brand;display:flex;align-items:center;gap:12px}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--acc);color:#fff;display:grid;place-items:center;flex:0 0 36px}
+.logo svg.ic{width:20px;height:20px}
+h1{margin:0;font-size:22px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+h1 span{color:inherit}
+.sub{grid-area:sub;color:var(--ink2);font-size:14px;margin-top:4px;max-width:520px}
+.cakeart{grid-area:art;width:120px;height:auto}
+
+/* вкладки */
+nav{position:sticky;top:0;z-index:5;background:rgba(246,242,236,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .in{max-width:960px;margin:0 auto;display:flex;gap:4px;padding:8px 12px;overflow-x:auto;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav button{flex:0 0 auto;display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border:1px solid transparent;border-radius:var(--r-ctl);background:none;font:500 14px/1 var(--sans);color:var(--ink2);cursor:pointer;transition:background-color .15s var(--ease),color .15s var(--ease),border-color .15s var(--ease)}
+nav button:hover{background:var(--raised);color:var(--ink)}
+nav button.on{background:var(--surface);color:var(--ink);border-color:var(--line2);box-shadow:0 1px 2px rgba(43,33,28,.06)}
+nav button i{display:inline-grid;color:var(--mute)}
+nav button.on i{color:var(--acc)}
+svg.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;display:block}
+
+/* основа */
+main{max-width:960px;margin:0 auto;padding:16px 16px 64px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(43,33,28,.04)}
+.card h2{margin:0 0 8px;font-size:17px;line-height:1.3;font-weight:600;display:flex;align-items:center;gap:12px}
+.hint{color:var(--ink2);font-size:13px;margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--ink2);margin-bottom:4px}
+input,select,textarea{width:100%;height:40px;font:inherit;font-size:15px;padding:0 12px;border:1px solid var(--line2);border-radius:var(--r-ctl);background:#fff;color:var(--ink);transition:border-color .15s var(--ease),box-shadow .15s var(--ease)}
+textarea{height:auto;padding:10px 12px}
+input[type=number]{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));align-items:end}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-table{width:100%;border-collapse:collapse}
-th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:12px;color:var(--mute);font-weight:500}
-td input,td select{padding:6px 8px}
-.num{text-align:right;white-space:nowrap}
-.x{background:none;border:0;color:var(--mute);font-size:18px;cursor:pointer;padding:2px 6px}
-.x:hover{color:var(--bad)}
-.big{font-size:28px;font-weight:700;color:var(--acc)}
-.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
-.kv:last-child{border:0}
-.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;background:#f1ebe6}
-.pill.ok{background:#e3f2e8;color:var(--ok)}.pill.warn{background:#fbefdc;color:var(--warn)}.pill.bad{background:#f8e1e1;color:var(--bad)}
-.day{margin:14px 0 6px;font-weight:600;display:flex;justify-content:space-between}
-.day small{color:var(--mute);font-weight:400}
-.order{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;background:#fff}
-.order .t{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.order .m{color:var(--mute);font-size:13px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
-.stat b{display:block;font-size:20px}
-.stat span{color:var(--mute);font-size:12px}
-.hide{display:none}
-.wide{overflow-x:auto}
-.about .steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.about .steps div{background:#fdf1f4;border-radius:14px;padding:12px;font-size:14px;color:var(--mute)}.about .steps b{display:block;color:var(--ink);margin-bottom:3px}
-.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
-.toast.on{opacity:1}
-footer{max-width:900px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font-size:12px}
-/* --- объёмный стиль --- */
-body{background:linear-gradient(180deg,rgba(253,236,242,.92) 0%,rgba(251,248,245,.55) 360px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23c0587e' stroke-opacity='.16' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='24' cy='30' r='6'/%3E%3Ccircle cx='35' cy='24' r='5'/%3E%3Cpath d='M30 18c2-6 7-8 11-8'/%3E%3Cpath d='M150 26l4 9 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z'/%3E%3Cpath d='M52 128h40v22H52zM52 139h40M58 128v-8a14 14 0 0 1 28 0v8M72 106v-6'/%3E%3Cpath d='M160 120c0-12 22-12 22 0l-4 26h-14zM163 120c2-8 14-10 16 0'/%3E%3Cpath d='M110 70l3 3m0-3l-3 3M200 80l3 3m0-3l-3 3M20 190l3 3m0-3l-3 3M130 200l3 3m0-3l-3 3'/%3E%3Ccircle cx='100' cy='190' r='3'/%3E%3Ccircle cx='190' cy='180' r='2.5'/%3E%3Cpath d='M18 92l12-12 6 6-12 12zM30 80l8-8'/%3E%3C/g%3E%3C/svg%3E"),#fbf8f5;background-attachment:fixed}
-.setlist .srow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
-.setlist .srow:last-child{border:0}
-.setlist .srow span{flex:1;font-size:15px}
-.setlist .srow small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
-.setlist .srow input,.setlist .srow select{width:110px;flex:0 0 110px;text-align:right}
-.res{margin:12px 0;padding:14px;border-radius:14px;background:#fdf1f4;font-size:15px}
-.res b.big2{display:block;font-size:24px;color:var(--acc)}
-.tools h2 .ic{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(145deg,#fff,#f8e3ea);box-shadow:0 3px 8px rgba(192,88,126,.18);margin-right:8px;font-size:18px;vertical-align:middle}
 .nowrap{flex-wrap:nowrap}
-/* --- иллюстрации и анимации --- */
-header{position:relative}
-.cakeart{position:absolute;right:16px;top:8px;width:104px;height:auto;filter:drop-shadow(0 8px 14px rgba(192,88,126,.25));animation:float 4s ease-in-out infinite}
-header .brand,header .sub{padding-right:110px}
-@keyframes float{50%{transform:translateY(-5px) rotate(-2deg)}}
-.cakeart .flame{transform-origin:60px 14px;animation:flick .5s ease-in-out infinite alternate}
-@keyframes flick{to{transform:scale(.85,1.12) rotate(4deg)}}
-.cakeart .spark{animation:tw 1.6s ease-in-out infinite}
-@keyframes tw{50%{opacity:.25}}
-.pic{flex:0 0 38px;width:38px;height:38px;border-radius:12px;display:inline-grid;place-items:center;font-size:20px;background:var(--pb,#fdf1f4);box-shadow:inset 0 -2px 0 rgba(0,0,0,.05),0 2px 6px rgba(60,30,40,.08)}
-.pic.big{width:56px;height:56px;flex-basis:56px;font-size:30px;border-radius:16px}
+.wide{overflow-x:auto}
+
+/* кнопки */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border:1px solid transparent;border-radius:var(--r-ctl);font:500 15px/1 var(--sans);cursor:pointer;background:var(--acc);color:#fff;text-decoration:none;transition:background-color .15s var(--ease),transform .1s var(--ease)}
+.btn:hover{background:var(--acc-ink)}
+.btn:active{transform:scale(.98)}
+.btn.g{background:var(--surface);color:var(--ink);border-color:var(--line2)}
+.btn.g:hover{background:var(--raised)}
+.btn.s{height:32px;padding:0 12px;font-size:13px}
+.btn.w{background:#fff;color:var(--acc-ink);border-color:var(--line2)}
+.btn.w:hover{background:var(--raised)}
+.btn:focus-visible,nav button:focus-visible,.chips button:focus-visible,.x:focus-visible,.link:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.link{background:none;border:0;padding:8px 0 0;color:var(--acc-ink);font:500 13px var(--sans);cursor:pointer}
+.link:hover{text-decoration:underline}
+.x{width:32px;height:32px;display:inline-grid;place-items:center;background:none;border:0;border-radius:8px;color:var(--mute);font-size:18px;line-height:1;cursor:pointer;transition:background-color .15s var(--ease),color .15s var(--ease)}
+.x:hover{background:var(--bad-soft);color:var(--bad)}
+
+/* таблицы */
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--mute);font-weight:500;font-family:var(--sans)}
+th.num{font-family:var(--sans)}
+#t-products th:first-child{width:30%}
+td select[data-k=u]{min-width:72px;padding:0 8px}
+td input,td select{height:36px}
+.num{text-align:right;white-space:nowrap;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
+.sh td,.sh th{font-size:14px}
+tr.flash{animation:hl 1.6s var(--ease)}
+@keyframes hl{from{background:var(--warn-soft)}}
+
+/* расчёт и ценник */
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);color:var(--ink2)}
+.kv b{font:500 14px var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.kv:last-of-type{border-bottom:0}
+.pricebox{position:relative;margin-top:16px;padding:20px 20px 20px 32px;border-radius:12px;background:var(--tag);border:1px solid var(--tag-line);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pricebox::before{content:'';position:absolute;left:12px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--surface);box-shadow:inset 0 1px 2px rgba(43,33,28,.3)}
+.pricebox::after{content:'';position:absolute;left:24px;top:12px;bottom:12px;border-left:1px dashed var(--tag-line)}
+.pricebox .pl{font-size:13px;color:var(--tag-ink)}
+.pricebox .big{font:500 34px/1.15 var(--mono);font-variant-numeric:tabular-nums;color:var(--acc-ink);letter-spacing:-.02em}
+.pricebox .pk{font:400 13px var(--mono);color:var(--tag-ink);margin-top:4px}
+.big{font:500 28px var(--mono);color:var(--acc-ink)}
+.res{margin:12px 0;padding:16px;border-radius:12px;background:var(--raised);font-size:15px;color:var(--ink2)}
+.res b.big2{display:block;font:500 24px/1.25 var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);margin:4px 0}
+
+/* заказы */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
+.stat b{display:block;font:500 22px/1.25 var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+.stat span{color:var(--ink2);font-size:13px}
+.stat:nth-child(2) b{color:var(--acc-ink)}
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:var(--raised);color:var(--ink2)}
+.pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.day{margin:24px 0 8px;font-weight:500;display:flex;justify-content:space-between;align-items:baseline}
+.day small{font:400 12px var(--mono);color:var(--mute)}
+.order{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px;margin-bottom:8px}
+.order .t{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:500}
+.order .t span{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.order .m{color:var(--ink2);font-size:13px;margin-top:2px}
+
+/* настройки */
+.setlist .srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.setlist .srow:last-child{border-bottom:0}
+.setlist .srow span{flex:1;font-size:15px}
+.setlist .srow small{display:block;color:var(--ink2);font-size:13px;margin-top:2px}
+.setlist .srow input,.setlist .srow select{width:112px;flex:0 0 112px;text-align:right}
+
+/* о программе */
+.about .steps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.about .steps div{background:var(--raised);border-radius:12px;padding:16px;font-size:14px;color:var(--ink2)}
+.about .steps b{display:block;color:var(--ink);font-weight:500;margin-bottom:4px}
+
+/* инструменты */
+.tools h2 span.ic{flex:0 0 32px;width:32px;height:32px;border-radius:8px;background:var(--raised);color:var(--ink2);display:inline-grid;place-items:center}
+
+/* картинки продуктов и тортов */
+.pic{flex:0 0 36px;width:36px;height:36px;border-radius:8px;display:inline-grid;place-items:center;font-size:19px;line-height:1;background:var(--raised)}
+.pic.big{flex-basis:48px;width:48px;height:48px;border-radius:12px;font-size:26px}
 .cellpic{display:flex;gap:8px;align-items:center}
 .cellpic>input,.cellpic>select{flex:1;min-width:0}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.chips button{width:46px;height:46px;border-radius:14px;border:2px solid transparent;background:#fdf1f4;font-size:22px;cursor:pointer;transition:transform .15s,border-color .15s}
-.chips button.on{border-color:var(--acc);transform:scale(1.08);background:#fff}
-.mhead{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.chips button{width:44px;height:44px;border-radius:var(--r-ctl);border:1px solid transparent;background:var(--raised);font-size:22px;line-height:1;cursor:pointer;transition:background-color .15s var(--ease),border-color .15s var(--ease)}
+.chips button:hover{background:#e7e0d6}
+.chips button.on{background:#fff;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+
+/* окна */
+.modal{position:fixed;inset:0;background:rgba(43,33,28,.4);display:grid;place-items:center;padding:16px;z-index:20}
+.mbox{background:var(--surface);border-radius:var(--r-panel);padding:24px;width:100%;max-width:440px;box-shadow:0 24px 48px rgba(43,33,28,.18)}
+.mbox h2{margin:0 0 4px;font-size:19px;font-weight:600}
+.mhead{display:flex;gap:12px;align-items:center;margin-bottom:16px}
 .mhead h2{margin:0}
-@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-main>section:not(.hide)>.card,main>section:not(.hide)>.stats,main>section:not(.hide)>#o-list{animation:up .35s ease both}
-main>section:not(.hide)>.card:nth-child(2){animation-delay:.06s}
-main>section:not(.hide)>.card:nth-child(3){animation-delay:.12s}
-main>section:not(.hide)>.card:nth-child(4){animation-delay:.18s}
-.modal:not(.hide){animation:fadein .2s ease}
-.modal:not(.hide) .mbox{animation:sheet .38s cubic-bezier(.2,1.25,.4,1)}
-@keyframes fadein{from{opacity:0}}
-@keyframes sheet{from{opacity:0;transform:translateY(40px) scale(.94)}}
-tr.flash{animation:flash 1.4s ease}
-@keyframes flash{0%{background:#fff1c9;transform:translateX(-8px)}40%{background:#fff6dc;transform:none}100%{background:transparent}}
-.btn:active,.chips button:active{transform:scale(.95)}
-.about .steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.about .steps div{background:#fdf1f4;border-radius:14px;padding:12px;font-size:14px;color:var(--mute)}.about .steps b{display:block;color:var(--ink);margin-bottom:3px}
-.toast{border-radius:14px;background:linear-gradient(135deg,#3a2a30,#5a3646);box-shadow:0 10px 24px rgba(0,0,0,.25);transform:translate(-50%,20px);transition:opacity .25s,transform .3s cubic-bezier(.2,1.3,.4,1);max-width:calc(100% - 32px);text-align:center}
-.toast.on{transform:translate(-50%,0)}
-.logo{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
-@keyframes pop{from{transform:scale(.4) rotate(-20deg);opacity:0}}
-@media (max-width:600px){.cakeart{width:78px;right:10px;top:12px}header .brand,header .sub{padding-right:76px}}
-.trial{background:linear-gradient(135deg,#3a2a30,#5a3646);color:#fff;padding:9px 16px;font-size:14px}
-.trial .in{max-width:900px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.btn.w.s{padding:7px 12px}
-nav .in{scrollbar-width:none}nav .in::-webkit-scrollbar{display:none}
-.shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-#lock .mbox{max-width:440px}
+.modal:not(.hide){animation:fade .2s var(--ease)}
+.modal:not(.hide) .mbox{animation:rise .25s var(--ease)}
+#lock .logo{width:48px;height:48px;border-radius:12px;margin:0 auto 12px}
+#lock .logo svg.ic{width:26px;height:26px}
+.shake{animation:shake .3s var(--ease)}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* пробный период, уведомления, подвал */
+.trial{background:var(--ink);color:#efe7de;padding:8px 16px;font-size:13px}
+.trial .in{max-width:960px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.trial .in span{flex:1;min-width:0}
+.trial b{font-weight:500;color:#fff}
+.trial .btn.w{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+.trial .btn.w:hover{background:rgba(255,255,255,.08)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,8px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 8px 24px rgba(43,33,28,.2);transition:opacity .2s var(--ease),transform .2s var(--ease)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+footer{max-width:960px;margin:0 auto;padding:0 16px 32px;color:var(--mute);font-size:12px}
+
+/* движение */
+@keyframes rise{from{opacity:0;transform:translateY(6px)}}
+@keyframes fade{from{opacity:0}}
+main>section:not(.hide)>*{animation:rise .3s var(--ease) both}
+main>section:not(.hide)>*:nth-child(2){animation-delay:.04s}
+main>section:not(.hide)>*:nth-child(3){animation-delay:.08s}
+main>section:not(.hide)>*:nth-child(4){animation-delay:.12s}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-/* --- разноцветность --- */
-nav button[data-t=orders].on{background:linear-gradient(135deg,#6b9cf2,#3f6fd8);box-shadow:0 6px 14px rgba(63,111,216,.35)}
-nav button[data-t=recipes].on{background:linear-gradient(135deg,#f6a65a,#e2803a);box-shadow:0 6px 14px rgba(226,128,58,.35)}
-nav button[data-t=products].on{background:linear-gradient(135deg,#5cc08a,#33a06a);box-shadow:0 6px 14px rgba(51,160,106,.35)}
-nav button[data-t=tools].on{background:linear-gradient(135deg,#a78bf5,#7b5be0);box-shadow:0 6px 14px rgba(123,91,224,.35)}
-nav button[data-t=settings].on{background:linear-gradient(135deg,#5fc3c9,#2f9ea6);box-shadow:0 6px 14px rgba(47,158,166,.35)}
-#t-orders .card,#t-orders .stat{border-top:4px solid #6b9cf2}
-#t-recipes .card{border-top:4px solid #f6a65a}
-#t-products .card{border-top:4px solid #5cc08a}
-#t-settings .card{border-top:4px solid #5fc3c9}
-#t-calc .card:first-child{border-top:4px solid #e07aa0}
-.kv span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:9px;background:var(--c,#ccc);vertical-align:1px}
-.kv:nth-of-type(1){--c:#f6a65a}.kv:nth-of-type(2){--c:#a78bf5}.kv:nth-of-type(3){--c:#5fc3c9}.kv:nth-of-type(4){--c:#6b9cf2}.kv:nth-of-type(5){--c:#5cc08a}.kv:nth-of-type(6){--c:#e07aa0}
-.stat:nth-child(1){background:linear-gradient(145deg,#fff,#eaf1ff)}.stat:nth-child(1) b{color:#3f6fd8}
-.stat:nth-child(2){background:linear-gradient(145deg,#fff,#fff1e3)}.stat:nth-child(2) b{color:#e2803a}
-.stat:nth-child(3){background:linear-gradient(145deg,#fff,#e6f7ee)}.stat:nth-child(3) b{color:#2e9963}
-.stat:nth-child(4){background:linear-gradient(145deg,#fff,#fdeaea)}.stat:nth-child(4) b{color:#d24b4b}
-#o-list .order{border-left:5px solid #c9c0bb}
-#o-list .order:has(.pill.ok){border-left-color:#5cc08a}#o-list .order:has(.pill.warn){border-left-color:#f6a65a}#o-list .order:has(.pill.bad){border-left-color:#e05a5a}
-.day span{color:#3f6fd8}
-.tools .card:nth-of-type(1){border-top:4px solid #f6a65a}.tools .card:nth-of-type(1) .ic{background:linear-gradient(145deg,#fff,#ffe6cc)}.tools .card:nth-of-type(1) .res{background:#fff4e8}.tools .card:nth-of-type(1) .big2{color:#e2803a}
-.tools .card:nth-of-type(2){border-top:4px solid #6b9cf2}.tools .card:nth-of-type(2) .ic{background:linear-gradient(145deg,#fff,#dde9ff)}.tools .card:nth-of-type(2) .res{background:#eef4ff}.tools .card:nth-of-type(2) .big2{color:#3f6fd8}
-.tools .card:nth-of-type(3){border-top:4px solid #5cc08a}.tools .card:nth-of-type(3) .ic{background:linear-gradient(145deg,#fff,#dcf3e6)}.tools .card:nth-of-type(3) .res{background:#ecf8f1}
-.tools .card:nth-of-type(4){border-top:4px solid #a78bf5}.tools .card:nth-of-type(4) .ic{background:linear-gradient(145deg,#fff,#ebe3ff)}.tools .card:nth-of-type(4) .pricebox{background:linear-gradient(135deg,#a78bf5,#6d4fd6);box-shadow:0 10px 24px rgba(109,79,214,.35)}
-.logo{background:conic-gradient(from 200deg,#ffe0ec,#fff1d6,#e3f6ea,#e3eeff,#efe6ff,#ffe0ec)}
-.sh td,.sh th{font-size:14px}
-header{padding-top:22px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:26px;background:linear-gradient(145deg,#fff,#f8e3ea);box-shadow:0 6px 16px rgba(192,88,126,.22),inset 0 1px 0 #fff}
-h1{font-size:24px}
-nav{background:rgba(251,248,245,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0}
-nav .in{padding:8px 12px 10px}
-nav button{display:flex;align-items:center;gap:6px;background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(60,30,40,.07);border-radius:12px}
-nav button i{font-style:normal}
-nav button.on{background:linear-gradient(135deg,#d06a90,#b84a72);color:#fff;box-shadow:0 6px 14px rgba(192,88,126,.35)}
-.card{border:0;border-radius:20px;padding:18px;box-shadow:0 1px 2px rgba(60,30,40,.05),0 10px 28px rgba(192,88,126,.10)}
-.card h2{font-size:18px}
-input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 12px;background:#fffdfc;box-shadow:inset 0 1px 2px rgba(60,30,40,.05)}
-.btn{background:linear-gradient(135deg,#d06a90,#b84a72);box-shadow:0 4px 12px rgba(192,88,126,.30);border-radius:12px;padding:10px 16px;transition:transform .12s,box-shadow .12s}
-.btn:hover{transform:translateY(-1px);box-shadow:0 7px 16px rgba(192,88,126,.36)}
-.btn:active{transform:translateY(1px)}
-.btn.g{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(60,30,40,.10)}
-.btn.w{background:#fff;color:var(--acc);box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.link{background:none;border:0;color:var(--acc);font:inherit;font-size:13px;font-weight:600;padding:6px 0 0;cursor:pointer}
-.pricebox{margin-top:14px;padding:16px;border-radius:16px;background:linear-gradient(135deg,#d06a90,#a8436a);color:#fff;box-shadow:0 10px 24px rgba(168,67,106,.35)}
-.pricebox .big{color:#fff;font-size:32px;text-shadow:0 2px 6px rgba(0,0,0,.15)}
-.pricebox .pl,.pricebox .pk{font-size:13px;opacity:.9}
-.stat{border:0;border-radius:18px;box-shadow:0 1px 2px rgba(60,30,40,.05),0 8px 22px rgba(192,88,126,.10)}
-.stat b{font-size:22px;color:var(--acc)}
-.order{border:0;border-radius:16px;box-shadow:0 1px 2px rgba(60,30,40,.05),0 6px 18px rgba(192,88,126,.09)}
-.modal{position:fixed;inset:0;background:rgba(43,37,34,.45);display:grid;place-items:center;padding:16px;z-index:20}
-.modal.hide{display:none}
-.mbox{background:#fff;border-radius:22px;padding:20px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.25)}
-.mbox h2{margin:0 0 4px}
+
+/* телефон */
 @media (max-width:600px){
+ header{padding:20px 16px 12px}
+ h1{font-size:20px}
+ .cakeart{width:84px}
+ .card{padding:16px}
+ .pricebox .big{font-size:30px}
  .mob-stack tr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 0;border-bottom:1px solid var(--line);position:relative;align-items:end}
  .mob-stack td{border:0;padding:0;min-width:0}
- .mob-stack td.first{grid-column:1/-1;padding-right:34px}
- .mob-stack td[data-l]::before{content:attr(data-l);display:block;font-size:11px;color:var(--mute);margin-bottom:3px}
+ .mob-stack td.first{grid-column:1/-1;padding-right:40px}
+ .mob-stack td[data-l]::before{content:attr(data-l);display:block;font-size:12px;color:var(--mute);margin-bottom:4px}
  .mob-stack td.del{position:absolute;right:0;top:14px}
- .mob-stack td.num{text-align:left;padding-bottom:10px;font-weight:600}
+ .mob-stack td.num{text-align:left;padding-bottom:8px;font-weight:500}
  .mob-stack thead{display:none}
 }
-@media print{nav,.noprint,footer,header .sub{display:none}body{background:#fff}.card{border:0}}
+@media print{nav,.noprint,footer,header .sub,.trial{display:none}body{background:#fff}.card,.order{border:0;box-shadow:none}}
 </style>
 </head>
 <body>
@@ -193,18 +210,19 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
   <path d="M56 22l8-4M56 29l8-4M56 36l8-4" stroke="#fff" stroke-width="2"/>
   <path class="flame" d="M60 2c5 6 6 9 3 12a4 4 0 0 1-6 0c-3-3-1-7 3-12z" fill="#f6a65a"/>
   <path class="flame" d="M60 7c2 3 3 5 1 7a2 2 0 0 1-3 0c-1-2 0-4 2-7z" fill="#ffe066"/>
-  <g class="spark" fill="#f6a65a"><path d="M14 30l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M104 22l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>
++
+
  </svg>
- <div class="brand"><div class="logo">🎂</div><h1>Калькулятор <span>кондитера</span></h1></div>
+ <div class="brand"><div class="logo"><i data-i="cake"></i></div><h1>Калькулятор кондитера</h1></div>
  <div class="sub">Себестоимость, цена торта и заказы. Ваши данные хранятся только на вашем телефоне.</div>
 </header>
 <nav><div class="in">
- <button data-t="calc" class="on"><i>🧮</i>Расчёт цены</button>
- <button data-t="orders"><i>📋</i>Заказы</button>
- <button data-t="recipes"><i>🍰</i>Торты</button>
- <button data-t="products"><i>🥚</i>Продукты</button>
- <button data-t="tools"><i>✨</i>Фишки</button>
- <button data-t="settings"><i>⚙️</i>Настройки</button>
+ <button data-t="calc" class="on"><i data-i="calc"></i>Расчёт цены</button>
+ <button data-t="orders"><i data-i="orders"></i>Заказы</button>
+ <button data-t="recipes"><i data-i="cake"></i>Торты</button>
+ <button data-t="products"><i data-i="egg"></i>Продукты</button>
+ <button data-t="tools"><i data-i="tools"></i>Фишки</button>
+ <button data-t="settings"><i data-i="sliders"></i>Настройки</button>
 </div></nav>
 <main>
 <div class="card about" id="about">
@@ -215,7 +233,7 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
   <div><b>1. Считает себестоимость</b>Сколько вам на самом деле стоит торт: продукты, коробка, декор, свет, газ и ваше время.</div>
   <div><b>2. Подсказывает цену</b>Чтобы вы не продавали в ноль и знали, сколько брать за килограмм.</div>
   <div><b>3. Ведёт заказы</b>Когда отдавать торт, кто внёс предоплату и сколько ещё получить. Текст подтверждения для клиента одной кнопкой.</div>
-  <div><b>✨ И ещё фишки</b>Торт на число гостей, пересчёт рецепта под форму, список покупок, итоги месяца.</div>
+  <div><b>4. Ещё инструменты</b>Торт на число гостей, пересчёт рецепта под форму, список покупок, итоги месяца.</div>
  </div>
  <p class="hint" style="font-size:14px;margin:12px 0 0"><b>С чего начать:</b> во вкладке «Продукты» впишите свои цены, в «Тортах» добавьте свои рецепты, а в «Расчёте цены» выберите торт и вес.</p>
 </div>
@@ -225,12 +243,13 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
  <div class="card">
   <h2>Сколько стоит торт</h2>
   <div class="grid">
-   <div style="grid-column:span 2"><label>Торт (рецепт)</label><select id="c-rec"></select><button class="link" id="c-newrec" type="button">+ Добавить свой торт</button></div>
+   <div style="grid-column:span 2"><label>Торт (рецепт)</label><select id="c-rec"></select></div>
    <div><label>Вес торта, кг</label><input id="c-kg" type="number" step="0.1" min="0.1" value="2"></div>
    <div><label>Декор, ягоды, топперы, ₽</label><input id="c-decor" type="number" min="0" value="300"></div>
    <div><label>Коробка, подложка, ₽</label><input id="c-box" type="number" min="0"></div>
    <div><label>Часов работы</label><input id="c-hours" type="number" step="0.5" min="0"></div>
   </div>
+  <button class="link" id="c-newrec" type="button">+ Добавить свой торт</button>
  </div>
  <div class="card">
   <div class="kv"><span>Продукты по рецепту</span><b id="r-ing"></b></div>
@@ -324,7 +343,7 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
 <!-- ФИШКИ -->
 <section id="t-tools" class="hide tools">
  <div class="card">
-  <h2><span class="ic">🎉</span>Сколько торта на гостей</h2>
+  <h2><span class="ic"><i data-i="users"></i></span>Сколько торта на гостей</h2>
   <p class="hint">Клиент говорит «нас будет 12», а вы сразу называете вес и цену.</p>
   <div class="grid">
    <div><label>Гостей</label><input id="g-n" type="number" min="1" value="12"></div>
@@ -334,7 +353,7 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
   <button class="btn s" id="g-go">Посчитать цену такого торта →</button>
  </div>
  <div class="card">
-  <h2><span class="ic">📐</span>Пересчёт рецепта под другую форму</h2>
+  <h2><span class="ic"><i data-i="ruler"></i></span>Пересчёт рецепта под другую форму</h2>
   <p class="hint">Рецепт на форму 20 см, а нужна 24 см? Программа скажет, во сколько раз увеличить продукты, и создаст новый рецепт.</p>
   <div class="grid">
    <div><label>Рецепт на форму, см</label><div style="display:grid;gap:6px"><select id="f-s1"><option value="c">Круглая</option><option value="s">Квадратная</option></select><input id="f-d1" type="number" placeholder="см" value="20"></div></div>
@@ -344,13 +363,13 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
   <div class="row"><select id="f-rec" style="flex:1;min-width:160px"></select><button class="btn s" id="f-make">Создать пересчитанный рецепт</button></div>
  </div>
  <div class="card">
-  <h2><span class="ic">🛒</span>Список покупок по заказам</h2>
+  <h2><span class="ic"><i data-i="basket"></i></span>Список покупок по заказам</h2>
   <p class="hint">Программа смотрит, какие торты заказаны, и считает, сколько каких продуктов купить и сколько это будет стоить.</p>
   <div class="row"><span class="hint" style="margin:0">Заказы на ближайшие</span><select id="sh-d" style="width:auto"><option value="3">3 дня</option><option value="7" selected>7 дней</option><option value="14">14 дней</option><option value="31">месяц</option></select><button class="btn g s" id="sh-copy">Скопировать список</button></div>
   <div id="sh-res"></div>
  </div>
  <div class="card">
-  <h2><span class="ic">📊</span>Итоги месяца</h2>
+  <h2><span class="ic"><i data-i="chart"></i></span>Итоги месяца</h2>
   <p class="hint">Сколько заработали на самом деле: выручка минус продукты, упаковка, свет и газ.</p>
   <input id="m-m" type="month" style="width:auto">
   <div id="m-res" style="margin-top:10px"></div>
@@ -402,7 +421,7 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
  <div class="row" style="margin-top:14px"><button class="btn" id="pm-ok">Добавить</button><button class="btn g" id="pm-no">Отмена</button></div>
 </div></div>
 <div class="modal hide" id="lock"><div class="mbox" style="text-align:center">
- <div style="font-size:46px">🎂</div>
+ <div class="logo"><i data-i="cake"></i></div>
  <h2 id="lk-title">Пробный период закончился</h2>
  <p class="hint" style="font-size:14px">Все ваши торты, продукты и заказы сохранены. Чтобы продолжить, активируйте программу: <b>990 ₽ один раз, навсегда</b>.</p>
  <div class="res" style="text-align:left;font-size:14px">1. Напишите Дмитрию в ВК и назовите номер устройства:<div class="row" style="margin-top:8px"><b id="lk-dev" style="font-size:20px;letter-spacing:1px"></b><button class="btn g s" id="lk-copy">Скопировать</button></div>2. После оплаты вы получите код. Введите его ниже.</div>
@@ -410,6 +429,18 @@ input,select,textarea{border:1px solid #eadfd8;border-radius:12px;padding:10px 1
  <div class="row" style="margin-top:12px;justify-content:center"><button class="btn" id="lk-ok">Активировать</button><a class="btn g" id="lk-vk" href="https://vk.me/dimmelnikov2012" target="_blank" rel="noopener" style="text-decoration:none">Написать Дмитрию</a><button class="btn g hide" id="lk-close">Позже</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
+<script>(function(){var P={
+calc:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M16 10h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/>',
+orders:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M12 11h4M12 16h4M8 11h.01M8 16h.01"/>',
+cake:'<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1M2 21h20M7 8v3M12 8v3M17 8v3M7 4h.01M12 4h.01M17 4h.01"/>',
+egg:'<path d="M12 22c6.23-.05 7.87-5.57 7.5-10-.36-4.34-3.95-9.96-7.5-10-3.55.04-7.14 5.66-7.5 10-.37 4.43 1.27 9.95 7.5 10z"/>',
+tools:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+sliders:'<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>',
+users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+ruler:'<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0ZM14.5 12.5l2-2M11.5 9.5l2-2M8.5 6.5l2-2M17.5 15.5l2-2"/>',
+basket:'<path d="M15 11l-1 9M19 11l-4-7M2 11h20M3.5 11l1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4M4.5 15.5h15M5 11l4-7M9 11l1 9"/>',
+chart:'<path d="M3 3v16a2 2 0 0 0 2 2h16M18 17V9M13 17V5M8 17v-3"/>'};
+document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+(P[e.dataset.i]||'')+'</svg>'})})()</script>
 
 <script>
 (function(){
@@ -469,7 +500,7 @@ var calcTouched={box:false,hours:false};
 var PICS=[[/мук/,'🌾'],[/пудр/,'❄️'],[/сахар/,'🍬'],[/яйц|яйк|желт|белк/,'🥚'],[/масло слив|сливочн/,'🧈'],[/масло|растит/,'🫒'],[/сливк|молок|кефир|йогурт|сметан|ряженк/,'🥛'],[/сыр|творог|творож|маскарпоне/,'🧀'],[/какао|шокол/,'🍫'],[/разрыхл|сод|соль/,'🧂'],[/красит/,'🎨'],[/сгущ/,'🥫'],[/клубн|ягод|малин|смород|черник|голубик/,'🍓'],[/вишн|черешн/,'🍒'],[/ванил/,'🌼'],[/орех|миндал|фундук|арахис|фисташ/,'🥜'],[/мёд|мед/,'🍯'],[/банан/,'🍌'],[/лимон|апельс|цитрус/,'🍋'],[/кокос/,'🥥'],[/желат|агар/,'🍮'],[/коробк|подложк|упаков/,'📦'],[/топпер|декор|посып/,'✨'],[/кофе/,'☕'],[/яблок/,'🍎'],[/мак/,'⚫']];
 function picOf(n){n=(n||'').toLowerCase();for(var i=0;i<PICS.length;i++)if(PICS[i][0].test(n))return PICS[i][1];return '🧺'}
 function hueOf(n){var h=0;for(var i=0;i<(n||'').length;i++)h=(h*31+n.charCodeAt(i))%360;return h}
-function picHtml(n,ic){return '<span class="pic" style="--pb:hsl('+hueOf(n)+' 80% 94%)">'+(ic||picOf(n))+'</span>'}
+function picHtml(n,ic){return '<span class="pic">'+(ic||picOf(n))+'</span>'}
 var CAKEICONS=['🎂','🍰','🧁','🍫','🍓','🍋','🍒','🥥','🍯','☕'];
 function fillRecSelect(sel,cur){sel.innerHTML=S.recipes.map(function(r){return '<option value="'+r.id+'">'+(r.ic||'🎂')+' '+esc(r.n)+'</option>'}).join('');if(cur)sel.value=cur}
 var flashLast=false;function doFlash(tb){if(!flashLast)return;flashLast=false;var rows=$(tb).querySelectorAll('tr');if(rows.length){var r=rows[rows.length-1];r.classList.add('flash');r.scrollIntoView({block:'center',behavior:'smooth'})}}
@@ -582,7 +613,7 @@ $('cm-no').onclick=function(){$('cm').classList.add('hide')};
 $('cm').onclick=function(e){if(e.target===this)this.classList.add('hide')};
 $('cm-ok').onclick=function(){var n=$('cm-n').value.trim();if(!n){toast('Впишите название торта');$('cm-n').focus();return}
  var r={id:uid(),n:n,y:parseFloat($('cm-y').value)||1000,it:[],ic:cmIc};S.recipes.push(r);curRec=r.id;save();$('cm').classList.add('hide');
- document.querySelector('nav button[data-t=recipes]').click();toast(cmIc+' Торт «'+n+'» создан. Добавьте продукты');setTimeout(function(){$('rc-edit').scrollIntoView({behavior:'smooth',block:'start'})},150)};
+ document.querySelector('nav button[data-t=recipes]').click();toast('Торт «'+n+'» создан, добавьте в него продукты');setTimeout(function(){$('rc-edit').scrollIntoView({behavior:'smooth',block:'start'})},150)};
 $('rc-new').onclick=openCM;
 $('pm-n').addEventListener('input',function(){$('pm-pic').textContent=picOf(this.value)});
 $('rc-copy').onclick=function(){var s=rec(curRec),r=JSON.parse(JSON.stringify(s));r.id=uid();r.n=s.n+' (копия)';S.recipes.push(r);curRec=r.id;save();renderRecipes()};
@@ -687,14 +718,14 @@ var t0=+ls('konditer_t0');if(!t0){t0=Date.now();ls('konditer_t0',String(t0))}
 var left=DAYS-Math.floor((Date.now()-t0)/864e5);
 var bar=document.createElement('div');bar.className='trial';document.body.insertBefore(bar,document.body.firstChild);
 function paint(){if(licensed()){bar.remove();$('lock').classList.add('hide');return}
- bar.innerHTML='<div class="in"><span>🎁 <b>Пробный период:</b> '+(left>0?'осталось '+left+' '+(left===1?'день':left<5?'дня':'дней'):'закончился')+'. Потом 990 ₽ один раз, навсегда.</span><button class="btn w s" id="tb-buy">Активировать</button></div>';
+ bar.innerHTML='<div class="in"><span><b>Пробный период:</b> '+(left>0?'осталось '+left+' '+(left===1?'день':left<5?'дня':'дней'):'закончился')+' · потом 990 ₽ навсегда</span><button class="btn w s" id="tb-buy">Активировать</button></div>';
  $('tb-buy').onclick=function(){openLock(true)};
  if(left<=0)openLock(false)}
 function openLock(canClose){$('lk-dev').textContent=dev();$('lk-title').textContent=canClose?'Активация программы':'Пробный период закончился';$('lk-close').classList.toggle('hide',!canClose);$('lock').dataset.cc=canClose?'1':'';$('lock').classList.remove('hide')}
 $('lk-close').onclick=function(){$('lock').classList.add('hide')};
 $('lk-copy').onclick=function(){copyText('Здравствуйте! Хочу купить калькулятор кондитера. Номер устройства: '+dev(),'Номер скопирован, отправьте его Дмитрию')};
 $('lk-vk').onclick=function(){copyText('Здравствуйте! Хочу купить калькулятор кондитера. Номер устройства: '+dev(),'Номер скопирован — вставьте его в сообщение')};
-$('lk-ok').onclick=function(){var c=norm($('lk-code').value);if(c===codeFor(dev())){ls('konditer_lic',c);toast('🎉 Спасибо! Программа активирована навсегда');paint()}else{toast('Код не подходит. Проверьте его или напишите Дмитрию');$('lk-code').classList.add('shake');setTimeout(function(){$('lk-code').classList.remove('shake')},500)}};
+$('lk-ok').onclick=function(){var c=norm($('lk-code').value);if(c===codeFor(dev())){ls('konditer_lic',c);toast('Программа активирована навсегда');paint()}else{toast('Код не подходит. Проверьте его или напишите Дмитрию');$('lk-code').classList.add('shake');setTimeout(function(){$('lk-code').classList.remove('shake')},500)}};
 paint();})();
 })();
 </script>
