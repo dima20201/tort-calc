@@ -161,6 +161,10 @@ tr.flash{animation:hl 1.6s var(--ease)}
 .trial b{font-weight:500;color:#fff}
 .trial .btn.w{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
 .trial .btn.w:hover{background:rgba(255,255,255,.08)}
+.vchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.vchip{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:6px 10px;font:500 13px var(--sans);cursor:pointer}.vchip:hover{border-color:var(--acc)}.vchip small{color:var(--mute);font-weight:400}
+.catrow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.catrow:last-child{border-bottom:0}.catrow b{font-weight:500}
+.fmrow{display:grid;grid-template-columns:22px 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:12px}.fmrow [data-k=t]{grid-column:2/5}.fmrow>div{grid-row:2}.fmrow>div:nth-of-type(1){grid-column:2}.fmrow>div:nth-of-type(2){grid-column:3}.fmrow .x{grid-row:2;grid-column:4}.fmrow input{min-width:0}.fmrow .u{font-size:12px;color:var(--mute)}
+#fm .mbox{max-height:calc(100vh - 32px);overflow:auto}
 .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,8px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 8px 24px rgba(43,33,28,.2);transition:opacity .2s var(--ease),transform .2s var(--ease)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 footer{max-width:960px;margin:0 auto;padding:0 16px 32px;color:var(--mute);font-size:12px}
@@ -388,8 +392,14 @@ main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33
 <!-- ПРОДУКТЫ -->
 <section id="t-products" class="hide">
  <div class="card">
+  <h2>Справочник цен</h2>
+  <p class="hint">Около 130 кондитерских продуктов и упаковки с примерными ценами сетевых магазинов. Найдите продукт и нажмите на фасовку: она добавится в ваш список, цену потом можно поправить на свою.</p>
+  <input id="cat-q" placeholder="Например, маскарпоне, сливки 33%, коробка" autocomplete="off">
+  <div id="cat-res"></div>
+ </div>
+ <div class="card">
   <h2>Продукты и цены</h2>
-  <p class="hint">Впишите свои цены из магазина: сколько стоит упаковка и сколько в ней. Цены везде пересчитаются сами. Цены ниже примерные.</p>
+  <p class="hint">Впишите свои цены из магазина: сколько стоит упаковка и сколько в ней. Если покупаете продукт в разных фасовках или разных марок, сохраните их все кнопкой «Фасовки» и отметьте, по какой считать. Цены везде пересчитаются сами.</p>
   <div class="wide">
   <table class="mob-stack"><thead><tr><th>Продукт</th><th>В упаковке</th><th>Ед.</th><th>Цена упаковки, ₽</th><th class="num">за 1 кг/л/шт</th><th></th></tr></thead><tbody id="p-rows"></tbody></table>
   </div>
@@ -469,13 +479,20 @@ main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33
 <div class="modal hide" id="pm"><div class="mbox">
  <div class="mhead"><span class="pic big" id="pm-pic">🧺</span><h2>Новый продукт</h2></div>
  <p class="hint">Как на упаковке из магазина: сколько в ней и сколько она стоит.</p>
- <div style="margin-bottom:10px"><label>Название</label><input id="pm-n" placeholder="Например, маскарпоне"></div>
+ <div style="margin-bottom:10px"><label>Название</label><input id="pm-n" placeholder="Например, маскарпоне" autocomplete="off"><div id="pm-sug"></div></div>
  <div class="grid">
   <div><label>В упаковке</label><input id="pm-q" type="number" value="250"></div>
   <div><label>Ед.</label><select id="pm-u"><option>г</option><option>мл</option><option>шт</option></select></div>
   <div><label>Цена упаковки, ₽</label><input id="pm-p" type="number"></div>
  </div>
  <div class="row" style="margin-top:14px"><button class="btn" id="pm-ok">Добавить</button><button class="btn g" id="pm-no">Отмена</button></div>
+</div></div>
+<div class="modal hide" id="fm"><div class="mbox">
+ <div class="mhead"><span class="pic big" id="fm-pic">🧺</span><div><h2 id="fm-title">Фасовки</h2><span class="hint">Отметьте фасовку, по которой считать себестоимость</span></div></div>
+ <div id="fm-list"></div>
+ <button class="btn g s" id="fm-add" type="button">+ Своя фасовка</button>
+ <div id="fm-cat"></div>
+ <div class="row" style="margin-top:14px"><button class="btn" id="fm-ok" type="button">Готово</button></div>
 </div></div>
 <div class="modal hide" id="lock"><div class="mbox" style="text-align:center">
  <div class="logo"><i data-i="cake"></i></div>
@@ -499,6 +516,128 @@ basket:'<path d="M15 11l-1 9M19 11l-4-7M2 11h20M3.5 11l1.6 7.4a2 2 0 0 0 2 1.6h9
 chart:'<path d="M3 3v16a2 2 0 0 0 2 2h16M18 17V9M13 17V5M8 17v-3"/>'};
 document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+(P[e.dataset.i]||'')+'</svg>'})})()</script>
 
+<script>
+/* Справочник: примерные цены в сетевых магазинах, ноябрь 2026. Формат: название|ед.|фасовка:цена[:подпись];... */
+var CAT_RAW=`Мука пшеничная высший сорт|г|1000:75;2000:135
+Мука миндальная|г|200:390;500:890
+Мука рисовая|г|500:120
+Мука кукурузная|г|500:95
+Мука цельнозерновая|г|1000:110
+Мука кокосовая|г|300:290
+Крахмал кукурузный|г|200:75;1000:260
+Крахмал картофельный|г|200:60;1000:190
+Разрыхлитель|г|10:18:пакетик;100:90;500:290
+Сода пищевая|г|500:70
+Соль|г|1000:30
+Сахар|г|1000:95;5000:430
+Сахар коричневый|г|900:260
+Сахарная пудра|г|200:70;500:120;1000:220
+Ванильный сахар|г|10:20:пакетик;100:130
+Ванилин|г|2:15
+Ванильный экстракт|мл|50:450
+Ваниль стручок|шт|1:450
+Какао-порошок алкализованный|г|100:150;250:380;1000:1300
+Желатин порошок|г|10:35;100:290
+Желатин листовой|г|10:120;100:850
+Агар-агар|г|25:150;100:450
+Пектин|г|50:350
+Кокосовая стружка|г|100:120;500:450
+Мак|г|100:90
+Овсяные хлопья|г|400:75
+Изюм|г|200:130
+Курага|г|200:220
+Чернослив|г|200:200
+Цукаты|г|200:160
+Грецкий орех очищенный|г|200:380;1000:1600
+Фундук очищенный|г|200:420;1000:1900
+Миндаль|г|200:390;1000:1700
+Миндальные лепестки|г|100:280
+Кешью|г|200:450
+Арахис|г|400:210
+Фисташки очищенные|г|100:520
+Пекан|г|100:450
+Фисташковая паста|г|100:950;500:3900
+Арахисовая паста|г|340:290
+Пралине фундучное|г|200:750
+Паста ореховая шоколадная|г|350:420
+Масло сливочное 82,5%|г|180:220;400:470;1000:1100:весовое
+Масло сливочное 72,5%|г|180:150
+Масло растительное|мл|1000:160
+Масло кокосовое|мл|250:350
+Сливки 33%|мл|200:180;500:420;1000:790
+Сливки 20%|мл|500:230
+Сливки 10%|мл|500:150
+Сливки растительные|мл|1000:450
+Молоко 3,2%|мл|900:100
+Молоко 2,5%|мл|900:90
+Молоко сухое|г|300:330
+Кефир|мл|900:110
+Ряженка|мл|900:110
+Сметана 20%|г|300:140
+Сметана 15%|г|300:120
+Йогурт греческий|г|140:80
+Творог 9%|г|200:140
+Творог 5%|г|200:120
+Сыр творожный сливочный|г|140:160;400:380;500:480;2200:1900:ведро
+Маскарпоне|г|250:330;500:600
+Сгущённое молоко|г|380:120
+Сгущёнка варёная|г|370:150
+Яйцо С0|шт|10:140
+Яйцо С1|шт|10:120;30:330
+Белок яичный сухой|г|100:300
+Шоколад тёмный|г|90:140:плитка;1000:2400:каллеты
+Шоколад молочный|г|90:120:плитка;1000:2500:каллеты
+Шоколад белый|г|90:120:плитка;1000:2600:каллеты
+Глазурь кондитерская|г|1000:600
+Какао-масло|г|100:450
+Шоколадные капли|г|100:130
+Клубника замороженная|г|300:230;1000:600
+Малина замороженная|г|300:280;1000:750
+Вишня замороженная без косточки|г|300:230;1000:600
+Черника замороженная|г|300:320
+Смородина замороженная|г|300:200
+Ягодная смесь замороженная|г|300:220
+Клубника свежая|г|250:300
+Голубика свежая|г|125:250
+Малина свежая|г|125:280
+Бананы|г|1000:140
+Лимон|шт|1:40
+Апельсин|г|1000:200
+Яблоки|г|1000:140
+Морковь|г|1000:70
+Тыква|г|1000:60
+Ананас консервированный|г|580:230
+Персики консервированные|г|820:330
+Мёд|г|500:400;1000:750
+Джем, конфитюр готовый|г|350:180
+Лимонная кислота|г|50:30
+Кофе растворимый|г|95:450
+Кофе молотый|г|250:450
+Коньяк для пропитки|мл|500:700
+Краситель гелевый|г|10:180
+Краситель сухой|г|10:150
+Краситель жирорастворимый|г|10:250
+Кандурин|г|5:250
+Посыпка кондитерская|г|50:120
+Мастика сахарная|г|1000:700
+Марципан|г|200:450
+Изомальт|г|500:450
+Глюкозный сироп|г|1000:450
+Инвертный сироп|г|300:300
+Коробка для торта 30×30|шт|1:130;10:1100
+Коробка для торта 25×25|шт|1:100;10:850
+Коробка для бенто-торта|шт|1:60;10:500
+Коробка для капкейков на 6|шт|1:120
+Подложка для торта 30 см|шт|1:40;10:350
+Подложка для торта 24 см|шт|1:30;10:260
+Ацетатная лента 80 мм|шт|1:450:рулон
+Пергамент|шт|1:120:рулон 8 м
+Капсулы для капкейков|шт|100:150
+Кондитерские мешки|шт|100:400
+Свечи для торта|шт|1:100:набор
+Топпер|шт|1:150`;
+var CAT=CAT_RAW.split('\n').map(function(l){var a=l.split('|');return {n:a[0],u:a[1],v:a[2].split(';').map(function(s){var b=s.split(':');return {q:+b[0],p:+b[1],t:b[2]||''}})}});
+</script>
 <script>
 (function(){
 var KEY='konditer_v1';
@@ -730,23 +869,68 @@ $('rc-del').onclick=function(){var cr=rec(curRec);if(!isPart(cr)&&cakes().length
 /* PRODUCTS */
 function renderProducts(){
  $('p-rows').innerHTML=S.products.map(function(p,i){var per=p.u==='шт'?unitPrice(p):unitPrice(p)*1000;
-  return '<tr><td class="first"><div class="cellpic">'+picHtml(p.n)+'<input data-i="'+i+'" data-k="n" value="'+esc(p.n)+'"></div></td><td data-l="В упаковке"><input type="number" data-i="'+i+'" data-k="q" value="'+p.q+'"></td>'+
+  return '<tr><td class="first"><div class="cellpic">'+picHtml(p.n)+'<input data-i="'+i+'" data-k="n" value="'+esc(p.n)+'"></div><button type="button" class="link" data-i="'+i+'" data-k="fm" style="padding-top:4px">'+fmLabel(p)+'</button></td><td data-l="В упаковке"><input type="number" data-i="'+i+'" data-k="q" value="'+p.q+'"></td>'+
   '<td data-l="Ед."><select data-i="'+i+'" data-k="u"><option'+(p.u==='г'?' selected':'')+'>г</option><option'+(p.u==='мл'?' selected':'')+'>мл</option><option'+(p.u==='шт'?' selected':'')+'>шт</option></select></td>'+
   '<td data-l="Цена упак., ₽"><input type="number" data-i="'+i+'" data-k="p" value="'+p.p+'"></td><td class="num" data-l="За 1 кг/л/шт">'+rub(per)+'</td><td class="del"><button class="x" data-i="'+i+'" data-k="del">×</button></td></tr>'}).join('')}
 $('p-rows').addEventListener('input',function(e){var t=e.target,p=S.products[+t.dataset.i];if(!p||!t.dataset.k||t.dataset.k==='del')return;
- p[t.dataset.k]=(t.dataset.k==='n'||t.dataset.k==='u')?t.value:(parseFloat(t.value)||0);save();
+ p[t.dataset.k]=(t.dataset.k==='n'||t.dataset.k==='u')?t.value:(parseFloat(t.value)||0);syncVar(p);save();
  var per=p.u==='шт'?unitPrice(p):unitPrice(p)*1000;t.closest('tr').querySelector('.num').textContent=rub(per)});
 $('p-rows').addEventListener('change',function(e){var k=e.target.dataset.k;if(k==='u'||k==='n')renderProducts()});
-$('p-rows').addEventListener('click',function(e){var t=e.target;if(t.dataset.k!=='del')return;var p=S.products[+t.dataset.i];
+$('p-rows').addEventListener('click',function(e){var t=e.target;if(t.dataset.k==='fm'){openFM(S.products[+t.dataset.i]);return}if(t.dataset.k!=='del')return;var p=S.products[+t.dataset.i];
  var used=S.recipes.filter(function(r){return r.it.some(function(x){return x[0]===p.id})});
  if(used.length){toast('Продукт есть в рецепте «'+used[0].n+'»');return}
  S.products.splice(+t.dataset.i,1);save();renderProducts()});
-var pmCb=null;
-function openPM(cb){pmCb=cb;$('pm-n').value='';$('pm-q').value=250;$('pm-u').value='г';$('pm-p').value='';$('pm').classList.remove('hide');setTimeout(function(){$('pm-n').focus()},50)}
+var pmCb=null,pmCat=null;
+/* фасовки и справочник */
+function nrm(s){return String(s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9%,. ]/g,' ').replace(/\s+/g,' ').trim()}
+function catFind(q,lim){var w=nrm(q).split(' ').filter(function(x){return x.length>1});if(!w.length)return [];
+ return CAT.map(function(c,ci){var n=' '+nrm(c.n),s=0,all=true;w.forEach(function(x){var st=x.length>4?x.slice(0,x.length-2):x.length===4?x.slice(0,3):x;
+  if(n.indexOf(' '+x)===0)s+=4;else if(n.indexOf(' '+x)>0)s+=3;else if(n.indexOf(' '+st)>=0)s+=2;else if(n.indexOf(st)>=0)s+=1;else all=false});return {ci:ci,s:all?s:0}})
+ .filter(function(o){return o.s>0}).sort(function(a,b){return b.s-a.s}).filter(function(o,i,arr){return o.s>=Math.min(arr[0].s,3*w.length)}).slice(0,lim||8).map(function(o){return o.ci})}
+function qtyTxt(q,u){return u==='шт'?q+' шт':fmtQ(q,u)}
+function vchip(ci,vi,plus){var c=CAT[ci],v=c.v[vi];return '<button type="button" class="vchip" data-c="'+ci+'" data-v="'+vi+'">'+(plus?'+ ':'')+qtyTxt(v.q,c.u)+' · ≈'+rub(v.p)+(v.t?' <small>'+esc(v.t)+'</small>':'')+'</button>'}
+function vars(p){if(!p.v||!p.v.length){p.v=[{t:'',q:p.q,p:p.p}];p.a=0}if(!(p.a>=0&&p.a<p.v.length))p.a=0;return p.v}
+function syncVar(p){if(p.v&&p.v[p.a]){p.v[p.a].q=p.q;p.v[p.a].p=p.p}}
+function setVar(p,i){p.a=i;p.q=p.v[i].q;p.p=p.v[i].p}
+function fmLabel(p){var n=p.v?p.v.length:1;return n>1?'Фасовки: '+n+' · считаю по '+qtyTxt(p.q,p.u):'Фасовки и справочник цен'}
+function addFromCat(ci,vi){var c=CAT[ci],v=c.v[vi],key=nrm(c.n);
+ var p=S.products.filter(function(x){return x.c===c.n||nrm(x.n)===key})[0]||S.products.filter(function(x){return !x.c&&x.u===c.u&&catFind(x.n,1)[0]===ci})[0];
+ if(p){vars(p);var j=-1;p.v.forEach(function(x,k){if(x.q===v.q&&p.u===c.u)j=k});if(j<0){p.v.push({t:v.t,q:v.q,p:v.p});j=p.v.length-1}if(p.u!==c.u)p.u=c.u;setVar(p,j);p.c=c.n;save();toast('«'+p.n+'»: считаю по '+qtyTxt(v.q,c.u));return p}
+ p={id:uid(),n:c.n,u:c.u,q:v.q,p:v.p,v:[{t:v.t,q:v.q,p:v.p}],a:0,c:c.n};S.products.push(p);save();toast('Добавлено: '+c.n);return p}
+function renderCat(){var q=$('cat-q').value,ids=catFind(q,8);
+ $('cat-res').innerHTML=!nrm(q)?'':ids.length?ids.map(function(ci){var c=CAT[ci];return '<div class="catrow">'+picHtml(c.n)+'<div><b>'+esc(c.n)+'</b><div class="vchips">'+c.v.map(function(v,vi){return vchip(ci,vi)}).join('')+'</div></div></div>'}).join(''):'<p class="hint" style="margin-top:10px">В справочнике такого нет. Добавьте продукт сами кнопкой «+ Продукт» ниже.</p>'}
+$('cat-q').addEventListener('input',renderCat);
+$('cat-res').addEventListener('click',function(e){var b=e.target.closest('.vchip');if(!b)return;addFromCat(+b.dataset.c,+b.dataset.v);flashLast=true;renderProducts();doFlash('p-rows')});
+$('pm-n').addEventListener('input',function(){var ids=catFind(this.value,3);
+ $('pm-sug').innerHTML=ids.length&&nrm(this.value).length>1?'<div class="hint" style="margin:6px 0 0">Из справочника, примерные цены:</div>'+ids.map(function(ci){return '<div style="margin-top:6px"><span class="hint" style="margin:0">'+esc(CAT[ci].n)+'</span><div class="vchips" style="margin-top:4px">'+CAT[ci].v.map(function(v,vi){return vchip(ci,vi)}).join('')+'</div></div>'}).join(''):''});
+$('pm-sug').addEventListener('click',function(e){var b=e.target.closest('.vchip');if(!b)return;var c=CAT[+b.dataset.c],v=c.v[+b.dataset.v];
+ $('pm-n').value=c.n;$('pm-u').value=c.u;$('pm-q').value=v.q;$('pm-p').value=v.p;pmCat={n:c.n,t:v.t};$('pm-pic').textContent=picOf(c.n);$('pm-sug').innerHTML='';$('pm-p').focus();$('pm-p').select()});
+var fmP=null;
+function openFM(p){fmP=p;vars(p);$('fm-title').textContent=p.n;$('fm-pic').textContent=picOf(p.n);renderFM();$('fm').classList.remove('hide')}
+function renderFM(){var p=fmP;
+ $('fm-list').innerHTML=p.v.map(function(v,i){return '<div class="fmrow"><input type="radio" name="fm-a" data-i="'+i+'" data-k="a"'+(i===p.a?' checked':'')+'>'+
+  '<input data-i="'+i+'" data-k="t" value="'+esc(v.t)+'" placeholder="Марка, магазин">'+
+  '<div class="row nowrap" style="gap:4px"><input type="number" data-i="'+i+'" data-k="q" value="'+v.q+'"><span class="u">'+p.u+'</span></div>'+
+  '<div class="row nowrap" style="gap:4px"><input type="number" data-i="'+i+'" data-k="p" value="'+v.p+'"><span class="u">₽</span></div>'+
+  '<button type="button" class="x" data-i="'+i+'" data-k="del">×</button></div>'}).join('')+
+  '<p class="hint" style="margin:4px 0 10px">Сейчас: '+rub(unitPrice(p)*(p.u==='шт'?1:1000))+' за 1 '+(p.u==='шт'?'шт':p.u==='мл'?'л':'кг')+'</p>';
+ var ids=catFind(p.c||p.n,3);
+ $('fm-cat').innerHTML=ids.length?'<div class="hint" style="margin:14px 0 0">Из справочника, примерные цены:</div>'+ids.map(function(ci){return '<div style="margin-top:6px"><span class="hint" style="margin:0">'+esc(CAT[ci].n)+'</span><div class="vchips" style="margin-top:4px">'+CAT[ci].v.map(function(v,vi){return vchip(ci,vi,1)}).join('')+'</div></div>'}).join(''):''}
+$('fm-list').addEventListener('input',function(e){var t=e.target,p=fmP,i=+t.dataset.i,k=t.dataset.k;if(!p||!k)return;
+ if(k==='t'){p.v[i].t=t.value}else if(k==='q'||k==='p'){p.v[i][k]=parseFloat(t.value)||0;if(i===p.a)setVar(p,i)}save()});
+$('fm-list').addEventListener('change',function(e){var t=e.target;if(t.dataset.k==='a'){setVar(fmP,+t.dataset.i);save();renderFM()}else if(t.dataset.k==='q'||t.dataset.k==='p')renderFM()});
+$('fm-list').addEventListener('click',function(e){var t=e.target,p=fmP;if(t.dataset.k!=='del')return;if(p.v.length<2){toast('Нужна хотя бы одна фасовка');return}
+ var i=+t.dataset.i;p.v.splice(i,1);if(p.a>=p.v.length||p.a===i)p.a=0;else if(p.a>i)p.a--;setVar(p,p.a);save();renderFM()});
+$('fm-add').onclick=function(){var p=fmP;p.v.push({t:'',q:p.q,p:p.p});save();renderFM();var ins=$('fm-list').querySelectorAll('[data-k=t]');ins[ins.length-1].focus()};
+$('fm-cat').addEventListener('click',function(e){var b=e.target.closest('.vchip');if(!b)return;var c=CAT[+b.dataset.c],v=c.v[+b.dataset.v],p=fmP;
+ if(c.u!==p.u){toast('Единицы разные: '+c.u+' и '+p.u);return}p.v.push({t:v.t||'справочник',q:v.q,p:v.p});setVar(p,p.v.length-1);save();renderFM()});
+$('fm-ok').onclick=function(){$('fm').classList.add('hide');renderProducts()};
+$('fm').onclick=function(e){if(e.target===this){this.classList.add('hide');renderProducts()}};
+function openPM(cb){pmCb=cb;$('pm-n').value='';$('pm-sug').innerHTML='';pmCat=null;$('pm-q').value=250;$('pm-u').value='г';$('pm-p').value='';$('pm').classList.remove('hide');setTimeout(function(){$('pm-n').focus()},50)}
 $('pm-no').onclick=function(){$('pm').classList.add('hide')};
 $('pm').onclick=function(e){if(e.target===this)this.classList.add('hide')};
 $('pm-ok').onclick=function(){var n=$('pm-n').value.trim();if(!n){toast('Впишите название');return}
- var p={id:uid(),n:n,q:parseFloat($('pm-q').value)||1,u:$('pm-u').value,p:parseFloat($('pm-p').value)||0};S.products.push(p);save();$('pm').classList.add('hide');toast('Продукт «'+n+'» добавлен');if(pmCb)pmCb(p)};
+ var p={id:uid(),n:n,q:parseFloat($('pm-q').value)||1,u:$('pm-u').value,p:parseFloat($('pm-p').value)||0};p.v=[{t:pmCat&&pmCat.n===n?pmCat.t:'',q:p.q,p:p.p}];p.a=0;if(pmCat&&pmCat.n===n)p.c=n;S.products.push(p);save();$('pm').classList.add('hide');toast('Продукт «'+n+'» добавлен');if(pmCb)pmCb(p)};
 $('p-add').onclick=function(){openPM(function(){flashLast=true;renderProducts();doFlash('p-rows')})};
 $('rc-newprod').onclick=function(){openPM(function(p){rec(curRec).it.push([p.id,100]);save();flashLast=true;renderRecipes();doFlash('rc-rows')})};
 $('c-newrec').onclick=openCM;
