@@ -165,6 +165,9 @@ tr.flash{animation:hl 1.6s var(--ease)}
 .catrow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.catrow:last-child{border-bottom:0}.catrow b{font-weight:500}
 .fmrow{display:grid;grid-template-columns:22px 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:12px}.fmrow [data-k=t]{grid-column:2/5}.fmrow>div{grid-row:2}.fmrow>div:nth-of-type(1){grid-column:2}.fmrow>div:nth-of-type(2){grid-column:3}.fmrow .x{grid-row:2;grid-column:4}.fmrow input{min-width:0}.fmrow .u{font-size:12px;color:var(--mute)}
 #fm .mbox{max-height:calc(100vh - 32px);overflow:auto}
+.stneg{color:#c0392b}.stlog{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.stlog:last-child{border-bottom:0}.stlog .hint{margin:0}
+.exrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}.exadd{display:grid;grid-template-columns:1fr 84px auto;gap:6px;margin-top:8px}
+table.ord td,table.ord th{font-size:13px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,8px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 8px 24px rgba(43,33,28,.2);transition:opacity .2s var(--ease),transform .2s var(--ease)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 footer{max-width:960px;margin:0 auto;padding:0 16px 32px;color:var(--mute);font-size:12px}
@@ -405,6 +408,13 @@ main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33
   </div>
   <button class="btn g s" id="p-add" style="margin-top:10px">+ Продукт</button>
  </div>
+ <div class="card">
+  <h2>Склад</h2>
+  <p class="hint">Вносите покупки кнопкой «+ Приход». Когда отмечаете заказ «Выдан», продукты по рецепту списываются со склада сами (те, что вы хоть раз вносили на склад). Если остаток не сходится с тем, что лежит в шкафу, нажмите на число и впишите фактический.</p>
+  <div class="row" style="justify-content:space-between"><button class="btn s" id="st-in">+ Приход</button><span id="st-sum" class="hint" style="margin:0"></span></div>
+  <div id="st-wrap"></div>
+  <details style="margin-top:12px"><summary class="hint" style="cursor:pointer;margin:0">Движение продуктов</summary><div id="st-log"></div></details>
+ </div>
 </section>
 
 <!-- ФИШКИ -->
@@ -437,8 +447,9 @@ main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33
  </div>
  <div class="card">
   <h2><span class="ic"><i data-i="chart"></i></span>Итоги месяца</h2>
-  <p class="hint">Сколько заработали на самом деле: выручка минус продукты, упаковка, свет и газ.</p>
+  <p class="hint">Сколько заработали на самом деле: выручка минус продукты, упаковка и регулярные расходы месяца.</p>
   <input id="m-m" type="month" style="width:auto">
+  <div id="m-exp" style="margin-top:12px"></div>
   <div id="m-res" style="margin-top:10px"></div>
  </div>
 </section>
@@ -493,6 +504,18 @@ main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33
  <button class="btn g s" id="fm-add" type="button">+ Своя фасовка</button>
  <div id="fm-cat"></div>
  <div class="row" style="margin-top:14px"><button class="btn" id="fm-ok" type="button">Готово</button></div>
+</div></div>
+<div class="modal hide" id="sm"><div class="mbox">
+ <div class="mhead"><span class="pic big" id="sm-pic">📦</span><div><h2>Приход продуктов</h2><span class="hint">Что купили и сколько заплатили</span></div></div>
+ <div style="margin-bottom:10px"><label>Продукт</label><select id="sm-p"></select></div>
+ <div class="grid">
+  <div><label>Упаковок</label><input id="sm-n" type="number" min="0" step="1" value="1"></div>
+  <div><label id="sm-ql">В упаковке</label><input id="sm-q" type="number" min="0"></div>
+  <div><label>Заплатили всего, ₽</label><input id="sm-s" type="number" min="0"></div>
+  <div><label>Дата</label><input id="sm-d" type="date"></div>
+ </div>
+ <label style="margin-top:12px;display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="sm-upd" checked style="width:auto">Обновить цену продукта по этой покупке</label>
+ <div class="row" style="margin-top:14px"><button class="btn" id="sm-ok" type="button">Внести</button><button class="btn g" id="sm-no" type="button">Отмена</button></div>
 </div></div>
 <div class="modal hide" id="lock"><div class="mbox" style="text-align:center">
  <div class="logo"><i data-i="cake"></i></div>
@@ -793,8 +816,8 @@ function renderOrders(){
  $('o-list').innerHTML=h}
 $('o-filter').onchange=renderOrders;
 $('o-list').onclick=function(e){var b=e.target.closest('[data-a]');if(!b)return;var id=b.dataset.id,o=S.orders.filter(function(x){return x.id===id})[0];if(!o)return;
- if(b.dataset.a==='done'){o.done=!o.done}
- if(b.dataset.a==='del'){if(!confirm('Удалить заказ?'))return;S.orders=S.orders.filter(function(x){return x.id!==id})}
+ if(b.dataset.a==='done'){o.done=!o.done;if(o.done)writeOff(o);else unWriteOff(o)}
+ if(b.dataset.a==='del'){if(!confirm('Удалить заказ?'))return;unWriteOff(o);S.orders=S.orders.filter(function(x){return x.id!==id})}
  if(b.dataset.a==='copy'){copyText(clientText(o),'Текст для клиента скопирован, вставьте его в переписку');return}
  if(b.dataset.a==='edit'){editing=id;$('o-date').value=o.date;$('o-time').value=o.time;$('o-name').value=o.name;$('o-contact').value=o.contact;$('o-cake').value=o.cake;$('o-kg').value=o.kg||'';$('o-price').value=o.price||'';$('o-pre').value=o.pre||'';$('o-deliv').value=o.deliv;$('o-note').value=o.note;$('o-formtitle').textContent='Изменить заказ';showForm(true);$('o-form').scrollIntoView();return}
  save();renderOrders()};
@@ -985,16 +1008,61 @@ function shopping(){var d=+$('sh-d').value,t=today(),e=new Date();e.setDate(e.ge
   '<div class="res">Заказов: '+used.length+' · на продукты примерно <b>'+rub(tot)+'</b>'+(miss.length?'<br><span class="hint">Без рецепта, не посчитаны: '+esc(miss.join(', '))+'</span>':'')+'</div>'}
 $('sh-d').onchange=shopping;
 $('sh-copy').onclick=function(){if(!shText){toast('Список пуст');return}copyText(shText,'Список покупок скопирован')};
+var EXQ=['Свет, газ, вода','Бензин, такси','Перчатки, плёнка, пергамент','Моющие средства','Реклама','Связь, интернет'];
 function month(){var m=$('m-m').value||today().slice(0,7);var os=S.orders.filter(function(o){return o.date.slice(0,7)===m});
+ var ex=(S.exp||[]).filter(function(e){return e.m===m}),exs=0;ex.forEach(function(e){exs+=e.s});
+ $('m-exp').innerHTML='<b style="font-weight:500">Регулярные расходы месяца</b><p class="hint" style="margin:2px 0 6px">То, что неудобно считать в каждом торте: свет, бензин, перчатки. Сумма распределяется на заказы месяца пропорционально их цене.</p>'+
+  ex.map(function(e){return '<div class="exrow"><span>'+esc(e.n)+'</span><span class="row nowrap" style="gap:8px"><b style="font-weight:500">'+rub(e.s)+'</b><button class="x" data-ex="'+e.id+'" type="button">×</button></span></div>'}).join('')+
+  '<div class="exadd"><input id="ex-n" list="ex-q" placeholder="Расход"><input id="ex-s" type="number" min="0" placeholder="₽"><button class="btn s" id="ex-add" type="button">Добавить</button></div><datalist id="ex-q">'+EXQ.map(function(x){return '<option value="'+x+'">'}).join('')+'</datalist>';
  if(!os.length){$('m-res').innerHTML='<p class="hint">В этом месяце заказов нет.</p>';return}
- var rev=0,ing=0,box=0,kg=0,cnt={};os.forEach(function(o){rev+=o.price;kg+=o.kg||0;box+=S.set.box;var r=findRec(o.cake);if(r&&r.y&&o.kg)ing+=recCost(r)/r.y*o.kg*1000;var k=o.cake||'Торт';cnt[k]=(cnt[k]||0)+1});
- var util=ing*S.set.util/100,inc=rev-ing-box-util;var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]})[0];
- $('m-res').innerHTML='<div class="kv"><span>Заказов</span><b>'+os.length+' · '+String(Math.round(kg*10)/10).replace('.',',')+' кг</b></div><div class="kv"><span>Выручка</span><b>'+rub(rev)+'</b></div><div class="kv"><span>Продукты</span><b>− '+rub(ing)+'</b></div><div class="kv"><span>Коробки и подложки</span><b>− '+rub(box)+'</b></div><div class="kv"><span>Свет, газ, вода</span><b>− '+rub(util)+'</b></div>'+
- '<div class="pricebox"><div class="pl">Остаётся вам</div><div class="big">'+rub(inc)+'</div><div class="pk">Самый популярный торт: '+esc(top)+' ('+cnt[top]+')</div></div>'}
+ var rev=0,ing=0,box=0,kg=0,cnt={},rows=[];os.forEach(function(o){rev+=o.price;kg+=o.kg||0;box+=S.set.box;var r=findRec(o.cake),oi=0;if(r&&r.y&&o.kg)oi=recCost(r)/r.y*o.kg*1000;ing+=oi;var k=o.cake||'Торт';cnt[k]=(cnt[k]||0)+1;rows.push({o:o,ing:oi})});
+ var util=ex.length?0:ing*S.set.util/100,inc=rev-ing-box-util-exs;var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]})[0];
+ var tb='';if(ex.length&&rev>0){tb='<div class="wide" style="margin-top:12px"><table class="sh ord"><thead><tr><th>Заказ</th><th class="num">Цена</th><th class="num">Продукты</th><th class="num">Расходы</th><th class="num">Остаётся</th></tr></thead><tbody>'+
+  rows.map(function(x){var sh=exs*x.o.price/rev,left=x.o.price-x.ing-S.set.box-sh;return '<tr><td>'+esc(x.o.cake||'Торт')+'<span class="hint" style="display:block;margin:0">'+fmtDay(x.o.date)+(x.o.name?' · '+esc(x.o.name):'')+'</span></td><td class="num">'+rub(x.o.price)+'</td><td class="num">'+rub(x.ing)+'</td><td class="num">'+rub(sh)+'</td><td class="num'+(left<0?' stneg':'')+'">'+rub(left)+'</td></tr>'}).join('')+'</tbody></table></div>'}
+ $('m-res').innerHTML='<div class="kv"><span>Заказов</span><b>'+os.length+' · '+String(Math.round(kg*10)/10).replace('.',',')+' кг</b></div><div class="kv"><span>Выручка</span><b>'+rub(rev)+'</b></div><div class="kv"><span>Продукты</span><b>− '+rub(ing)+'</b></div><div class="kv"><span>Коробки и подложки</span><b>− '+rub(box)+'</b></div>'+
+  (ex.length?'<div class="kv"><span>Регулярные расходы</span><b>− '+rub(exs)+'</b></div>':'<div class="kv"><span>Свет, газ, вода ('+S.set.util+'% от продуктов)</span><b>− '+rub(util)+'</b></div>')+
+  '<div class="pricebox"><div class="pl">Остаётся вам</div><div class="big">'+rub(inc)+'</div><div class="pk">Самый популярный торт: '+esc(top)+' ('+cnt[top]+')</div></div>'+
+  (ex.length&&rev>0?'<p class="hint" style="margin-top:10px">Регулярные расходы — '+(Math.round(exs/rev*1000)/10).toString().replace('.',',')+'% от выручки, в среднем '+rub(exs/os.length)+' на заказ.</p>':'')+tb}
+$('m-exp').addEventListener('click',function(e){var t=e.target;
+ if(t.dataset.ex){S.exp=(S.exp||[]).filter(function(x){return x.id!==t.dataset.ex});save();month();return}
+ if(t.id==='ex-add'){var n=$('ex-n').value.trim(),s=parseFloat($('ex-s').value)||0;if(!n||!s){toast('Впишите расход и сумму');return}
+  S.exp=S.exp||[];S.exp.push({id:uid(),m:$('m-m').value||today().slice(0,7),n:n,s:s});save();month();$('ex-n').focus()}});
+$('m-exp').addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.id==='ex-s'||e.target.id==='ex-n')){e.preventDefault();$('ex-add').click()}});
+/* СКЛАД */
+function stockOf(pid){var s=0;(S.stock||[]).forEach(function(x){if(x.pid===pid)s+=x.q});return s}
+function writeOff(o){if(!S.stockOn)return;var r=findRec(o.cake);if(!r||!r.y||!o.kg){toast('Рецепт «'+(o.cake||'')+'» не найден, со склада не списано');return}
+ var need={},on={};addNeed(r,o.kg*1000/r.y,need);S.stock=S.stock||[];S.stock.forEach(function(x){if(x.t!=='out')on[x.pid]=1});Object.keys(need).forEach(function(pid){if(on[pid]&&prod(pid)&&need[pid]>0)S.stock.push({id:uid(),d:today(),pid:pid,q:-need[pid],t:'out',o:o.id})});toast('Продукты по рецепту списаны со склада')}
+function unWriteOff(o){if(S.stock)S.stock=S.stock.filter(function(x){return x.o!==o.id})}
+function renderStock(){var ids={};(S.stock||[]).forEach(function(x){ids[x.pid]=1});var ps=S.products.filter(function(p){return ids[p.id]}).sort(function(a,b){return a.n.localeCompare(b.n,'ru')});
+ if(!ps.length){$('st-wrap').innerHTML='<p class="hint" style="margin-top:10px">Склад пока пуст. Внесите первую покупку, и программа начнёт вести остатки.</p>';$('st-sum').textContent='';$('st-log').innerHTML='';return}
+ var tot=0;$('st-wrap').innerHTML='<div class="wide"><table class="sh" style="margin-top:10px"><thead><tr><th>Продукт</th><th class="num">Остаток</th><th class="num">≈ на сумму</th></tr></thead><tbody>'+
+  ps.map(function(p){var s=stockOf(p.id),v=Math.max(0,s)*unitPrice(p);tot+=v;return '<tr><td>'+esc(p.n)+'</td><td class="num"><button type="button" class="link'+(s<0?' stneg':'')+'" data-fact="'+p.id+'" style="padding:0">'+(s<0?'не хватает '+qtyTxt(-Math.round(s),p.u):qtyTxt(Math.round(s),p.u))+'</button></td><td class="num">'+rub(v)+'</td></tr>'}).join('')+'</tbody></table></div>';
+ $('st-sum').textContent='На складе примерно на '+rub(tot);
+ var log=(S.stock||[]).slice().sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0}).slice(0,40);
+ $('st-log').innerHTML=log.map(function(x){var p=prod(x.pid),o=x.o&&S.orders.filter(function(y){return y.id===x.o})[0];
+  var what=x.t==='in'?'Приход'+(x.s?' · '+rub(x.s):''):x.t==='adj'?'Инвентаризация':'Заказ'+(o?': '+esc(o.cake||'')+(o.name?', '+esc(o.name):''):'');
+  return '<div class="stlog"><span>'+esc(p?p.n:'?')+'<span class="hint" style="display:block">'+fmtDay(x.d)+' · '+what+'</span></span><span class="row nowrap" style="gap:8px"><b style="font-weight:500">'+(x.q>0?'+':'−')+qtyTxt(Math.round(Math.abs(x.q)),p?p.u:'г')+'</b>'+(x.t!=='out'?'<button class="x" type="button" data-mv="'+x.id+'">×</button>':'')+'</span></div>'}).join('')}
+$('st-wrap').addEventListener('click',function(e){var pid=e.target.dataset.fact;if(!pid)return;var p=prod(pid),cur=Math.round(stockOf(pid));
+ var v=prompt('Сколько «'+p.n+'» есть на самом деле, '+p.u+'?',Math.max(0,cur));if(v===null)return;v=parseFloat(String(v).replace(',','.'));if(isNaN(v))return;
+ if(v!==cur){S.stock.push({id:uid(),d:today(),pid:pid,q:v-cur,t:'adj'});save()}renderStock()});
+$('st-log').addEventListener('click',function(e){var id=e.target.dataset.mv;if(!id)return;if(!confirm('Удалить эту запись?'))return;S.stock=S.stock.filter(function(x){return x.id!==id});save();renderStock()});
+var smTouched=false;
+function smP(){return prod($('sm-p').value)}
+function smFill(){var p=smP();if(!p)return;$('sm-ql').textContent='В упаковке, '+p.u;$('sm-q').value=p.q;smTouched=false;smSum();$('sm-pic').textContent=picOf(p.n)}
+function smSum(){if(smTouched)return;var p=smP();if(!p)return;$('sm-s').value=Math.round(p.p/(p.q||1)*(num('sm-q')||p.q)*(num('sm-n')||0))}
+$('st-in').onclick=function(){if(!S.products.length)return;$('sm-p').innerHTML=S.products.slice().sort(function(a,b){return a.n.localeCompare(b.n,'ru')}).map(function(p){return '<option value="'+p.id+'">'+esc(p.n)+'</option>'}).join('');
+ $('sm-n').value=1;$('sm-d').value=today();$('sm-upd').checked=true;smFill();$('sm').classList.remove('hide')};
+$('sm-p').onchange=smFill;$('sm-n').oninput=smSum;$('sm-q').oninput=smSum;$('sm-s').oninput=function(){smTouched=true};
+$('sm-no').onclick=function(){$('sm').classList.add('hide')};
+$('sm').onclick=function(e){if(e.target===this)this.classList.add('hide')};
+$('sm-ok').onclick=function(){var p=smP(),n=num('sm-n'),q=num('sm-q'),s=num('sm-s');if(!p||!n||!q){toast('Впишите, сколько купили');return}
+ S.stock=S.stock||[];S.stockOn=true;S.stock.push({id:uid(),d:$('sm-d').value||today(),pid:p.id,q:n*q,s:s,t:'in'});
+ if($('sm-upd').checked&&s>0){vars(p);var per=Math.round(s/n*100)/100,j=-1;p.v.forEach(function(x,k){if(x.q===q)j=k});if(j<0){p.v.push({t:'',q:q,p:per});j=p.v.length-1}else p.v[j].p=per;setVar(p,j)}
+ save();$('sm').classList.add('hide');toast('Внесено: '+p.n+' '+qtyTxt(n*q,p.u));renderProducts();renderStock()};
 $('m-m').onchange=month;
 function renderTools(){if(!$('m-m').value)$('m-m').value=today().slice(0,7);var c=$('f-rec').value;fillRecSelect($('f-rec'),c);guests();forms();shopping();month()}
 
-function render(t){if(t==='calc'){var c=$('c-rec').value;fillRecSelect($('c-rec'),c);calc()}if(t==='orders'){$('o-cakes').innerHTML=cakes().map(function(r){return '<option value="'+esc(r.n)+'">'}).join('');renderOrders()}if(t==='recipes')renderRecipes();if(t==='products')renderProducts();if(t==='tools')renderTools();if(t==='settings')renderSettings()}
+function render(t){if(t==='calc'){var c=$('c-rec').value;fillRecSelect($('c-rec'),c);calc()}if(t==='orders'){$('o-cakes').innerHTML=cakes().map(function(r){return '<option value="'+esc(r.n)+'">'}).join('');renderOrders()}if(t==='recipes')renderRecipes();if(t==='products'){renderProducts();renderStock()}if(t==='tools')renderTools();if(t==='settings')renderSettings()}
 function renderAll(){['calc','orders','recipes','products','tools','settings'].forEach(render)}
 load();renderAll();
 
