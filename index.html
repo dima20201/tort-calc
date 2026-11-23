@@ -187,6 +187,7 @@ main>section:not(.hide)>*:nth-child(4){animation-delay:.12s}
  .mob-stack td[data-l]::before{content:attr(data-l);display:block;font-size:12px;color:var(--mute);margin-bottom:4px}
  .mob-stack td.del{position:absolute;right:0;top:14px}
  .mob-stack td.num{text-align:left;padding-bottom:8px;font-weight:500}
+.mob-stack tr.prt td.pq{grid-column:span 2}.mob-stack tr.prt td.pinfo{grid-column:1/-1;order:5}.mob-stack tr.prt td.pinfo::before{display:none}
  .mob-stack thead{display:none}
 }
 /* ===== цвет и фон (по просьбе: ярче, как раньше) ===== */
@@ -357,10 +358,11 @@ main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33
 <section id="t-recipes" class="hide">
  <div class="card">
   <h2>Рецепты</h2>
-  <p class="hint">Добавьте свои торты кнопкой «+ Новый торт». Внесите рецепт на тот вес, который из него выходит, и программа пересчитает его на любой вес торта.</p>
+  <p class="hint">Торт можно собрать из заготовок: бисквиты и коржи считаются штуками нужного диаметра, кремы и начинки — по весу. Создайте заготовку кнопкой «+ Заготовка», потом добавьте её в торт. Или внесите рецепт торта целиком на тот вес, который из него выходит.</p>
   <div class="row">
    <select id="rc-sel" style="flex:1;min-width:180px"></select>
    <button class="btn s" id="rc-new">+ Новый торт</button>
+   <button class="btn s" id="rc-newpart">+ Заготовка</button>
    <button class="btn g s" id="rc-copy">Копия</button>
    <button class="btn g s" id="rc-del">Удалить</button>
   </div>
@@ -368,14 +370,16 @@ main section .card{border-top:4px solid var(--c);box-shadow:0 1px 2px rgba(43,33
  <div class="card" id="rc-edit">
   <div class="grid">
    <div><label>Название</label><input id="rc-name"></div>
-   <div><label>Выход готового, г</label><input id="rc-yield" type="number"></div>
+   <div><label>Что это</label><select id="rc-kind"><option value="">Торт</option><option value="d">Бисквит, корж (штуками по диаметру)</option><option value="w">Крем, начинка, конфитюр (по весу)</option></select></div>
+   <div id="rc-dwrap"><label>Диаметр коржа по рецепту, см</label><input id="rc-d" type="number" min="1"></div>
+   <div><label id="rc-ylab">Выход готового, г</label><input id="rc-yield" type="number"><button type="button" class="link hide" id="rc-ysum" style="margin-top:4px"></button></div>
   </div>
-  <label style="margin-top:10px">Картинка торта</label><div class="chips" id="rc-ic"></div>
+  <div id="rc-icwrap"><label style="margin-top:10px">Картинка торта</label><div class="chips" id="rc-ic"></div></div>
   <div class="wide" style="margin-top:10px">
   <table class="mob-stack"><thead><tr><th>Продукт</th><th>Количество</th><th>Цена упаковки, ₽</th><th class="num">Стоимость</th><th></th></tr></thead><tbody id="rc-rows"></tbody></table>
   </div>
   <div class="row" style="margin-top:10px;justify-content:space-between">
-   <span class="row"><button class="btn g s" id="rc-addrow">+ Продукт из списка</button><button class="btn g s" id="rc-newprod">+ Новый продукт</button></span>
+   <span class="row"><button class="btn g s" id="rc-addrow">+ Продукт из списка</button><button class="btn g s" id="rc-newprod">+ Новый продукт</button><button class="btn g s" id="rc-addpart">+ Заготовка в торт</button></span>
    <div><span class="hint">Итого: </span><b id="rc-total"></b> · <span class="hint">за 1 кг: </span><b id="rc-perkg"></b></div>
   </div>
  </div>
@@ -529,7 +533,28 @@ var DEF={
 var S;
 function load(){try{var raw=localStorage.getItem(KEY);S=raw?JSON.parse(raw):null}catch(e){S=null}
  if(!S||!S.products){S=JSON.parse(JSON.stringify(DEF))}
- S.set=Object.assign({},DEF.set,S.set||{});S.orders=S.orders||[]}
+ S.set=Object.assign({},DEF.set,S.set||{});S.orders=S.orders||[];seedParts()}
+/* заготовки: k='d' бисквит по диаметру (y = вес 1 коржа), k='w' крем/начинка по весу (y = выход) */
+var PARTS_EX=[
+ {id:'b1',k:'d',d:20,y:480,n:'Бисквит «Красный бархат»',it:[['p1',130],['p2',110],['p3',1],['p11',100],['p9',100],['p8',7],['p10',4],['p12',1]]},
+ {id:'b2',k:'w',y:820,n:'Крем-чиз',it:[['p6',600],['p4',100],['p7',120]]},
+ {id:'b3',k:'w',y:330,n:'Ягодный конфитюр',it:[['p15',300],['p2',100]]}];
+var CAKE_EX={id:'r5',ic:'🍰',n:'Красный бархат из заготовок',y:2390,it:[['@b1',3,20],['@b2',700],['@b3',250]]};
+function seedParts(){if(S.partsV)return;S.partsV=1;if(S.recipes.some(isPart))return;
+ PARTS_EX.concat([CAKE_EX]).forEach(function(x){if(recById(x.id))return;var r=JSON.parse(JSON.stringify(x));r.it=r.it.filter(function(i){return i[0][0]==='@'||prod(i[0])});S.recipes.push(r)});save()}
+function isPart(r){return !!r&&(r.k==='d'||r.k==='w')}
+function cakes(){return S.recipes.filter(function(r){return !isPart(r)})}
+function partsList(){return S.recipes.filter(isPart)}
+function recById(id){for(var i=0;i<S.recipes.length;i++)if(S.recipes[i].id===id)return S.recipes[i];return null}
+function isPartItem(x){return typeof x[0]==='string'&&x[0].charAt(0)==='@'}
+function partOf(x){var p=recById(x[0].slice(1));return isPart(p)?p:null}
+function diaK(p,dm){return p.k==='d'&&p.d>0&&dm>0?dm*dm/(p.d*p.d):1}
+/* во сколько раз взять рецепт заготовки для строки торта */
+function partMul(p,x){var q=+x[1]||0;return p.k==='d'?q*diaK(p,+x[2]):(p.y>0?q/p.y:0)}
+function itemCost(x){if(isPartItem(x)){var p=partOf(x);return p?recCost(p,1)*partMul(p,x):0}return unitPrice(prod(x[0]))*(+x[1]||0)}
+function itemW(x){if(isPartItem(x)){var p=partOf(x);if(!p)return 0;return p.k==='d'?p.y*partMul(p,x):(+x[1]||0)}var pr=prod(x[0]);return pr&&pr.u!=='шт'?(+x[1]||0):0}
+function recWeight(r){var s=0;r.it.forEach(function(x){s+=itemW(x)});return s}
+function addNeed(r,f,need,depth){r.it.forEach(function(x){if(isPartItem(x)){var p=partOf(x);if(p&&!depth)addNeed(p,f*partMul(p,x),need,1);return}need[x[0]]=(need[x[0]]||0)+(+x[1]||0)*f})}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function $(id){return document.getElementById(id)}
 function rub(v){return Math.round(v).toLocaleString('ru-RU')+' ₽'}
@@ -538,7 +563,7 @@ function uid(){return 'x'+Date.now().toString(36)+Math.random().toString(36).sli
 function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(function(){e.classList.remove('on')},1800)}
 function prod(id){for(var i=0;i<S.products.length;i++)if(S.products[i].id===id)return S.products[i];return null}
 function unitPrice(p){return p&&p.q>0?p.p/p.q:0}
-function recCost(r){var s=0;r.it.forEach(function(x){s+=unitPrice(prod(x[0]))*(+x[1]||0)});return s}
+function recCost(r,depth){var s=0;r.it.forEach(function(x){if(depth&&isPartItem(x))return;s+=itemCost(x)});return s}
 function rec(id){for(var i=0;i<S.recipes.length;i++)if(S.recipes[i].id===id)return S.recipes[i];return S.recipes[0]}
 function num(id){return parseFloat($(id).value)||0}
 
@@ -555,7 +580,10 @@ function picOf(n){n=(n||'').toLowerCase();for(var i=0;i<PICS.length;i++)if(PICS[
 function hueOf(n){var h=0;for(var i=0;i<(n||'').length;i++)h=(h*31+n.charCodeAt(i))%360;return h}
 function picHtml(n,ic){return '<span class="pic" style="--pb:hsl('+hueOf(n)+' 75% 94%)">'+(ic||picOf(n))+'</span>'}
 var CAKEICONS=['🎂','🍰','🧁','🍫','🍓','🍋','🍒','🥥','🍯','☕'];
-function fillRecSelect(sel,cur){sel.innerHTML=S.recipes.map(function(r){return '<option value="'+r.id+'">'+(r.ic||'🎂')+' '+esc(r.n)+'</option>'}).join('');if(cur)sel.value=cur}
+function fillRecSelect(sel,cur){sel.innerHTML=cakes().map(function(r){return '<option value="'+r.id+'">'+(r.ic||'🎂')+' '+esc(r.n)+'</option>'}).join('');if(cur)sel.value=cur}
+function partIc(p){return p.k==='d'?'🥮':'🥣'}
+function fillAllSelect(sel,cur){var ps=partsList();sel.innerHTML='<optgroup label="Торты">'+cakes().map(function(r){return '<option value="'+r.id+'">'+(r.ic||'🎂')+' '+esc(r.n)+'</option>'}).join('')+'</optgroup>'+
+ (ps.length?'<optgroup label="Заготовки">'+ps.map(function(r){return '<option value="'+r.id+'">'+partIc(r)+' '+esc(r.n)+'</option>'}).join('')+'</optgroup>':'');if(cur)sel.value=cur}
 var flashLast=false;function doFlash(tb){if(!flashLast)return;flashLast=false;var rows=$(tb).querySelectorAll('tr');if(rows.length){var r=rows[rows.length-1];r.classList.add('flash');r.scrollIntoView({block:'center',behavior:'smooth'})}}
 function calc(){
  var r=rec($('c-rec').value);if(!r){return}
@@ -637,26 +665,52 @@ var curRec=null;
 function renderRecipes(){
  if(!S.recipes.length){S.recipes.push({id:uid(),n:'Мой торт',y:1000,it:[]})}
  if(!curRec||!S.recipes.some(function(r){return r.id===curRec}))curRec=S.recipes[0].id;
- fillRecSelect($('rc-sel'),curRec);var r=rec(curRec);
- $('rc-name').value=r.n;$('rc-yield').value=r.y;
+ fillAllSelect($('rc-sel'),curRec);var r=rec(curRec),part=isPart(r);
+ $('rc-name').value=r.n;$('rc-yield').value=r.y;$('rc-kind').value=r.k||'';$('rc-d').value=r.d||'';
+ $('rc-dwrap').classList.toggle('hide',r.k!=='d');$('rc-icwrap').classList.toggle('hide',part);$('rc-addpart').classList.toggle('hide',part);
+ $('rc-ylab').textContent=r.k==='d'?'Вес одного коржа, г':r.k==='w'?'Выход готового, г':'Вес готового торта, г';
  var opts=S.products.map(function(p){return '<option value="'+p.id+'">'+esc(p.n)+'</option>'}).join('');
+ if(!part){var ps=partsList();if(ps.length)opts+='<optgroup label="Заготовки">'+ps.map(function(p){return '<option value="@'+p.id+'">'+partIc(p)+' '+esc(p.n)+'</option>'}).join('')+'</optgroup>'}
  $('rc-ic').innerHTML=CAKEICONS.map(function(c){return '<button type="button" class="'+((r.ic||'🎂')===c?'on':'')+'" data-c="'+c+'">'+c+'</button>'}).join('');
- $('rc-rows').innerHTML=r.it.map(function(x,i){var p=prod(x[0]);return '<tr><td class="first"><div class="cellpic">'+picHtml(p?p.n:'')+'<select data-i="'+i+'" data-k="p">'+opts.replace('value="'+x[0]+'"','value="'+x[0]+'" selected')+'</select></div></td>'+
+ $('rc-rows').innerHTML=r.it.map(function(x,i){var sel='<select data-i="'+i+'" data-k="p">'+opts.replace('value="'+x[0]+'"','value="'+x[0]+'" selected')+'</select>';
+  if(isPartItem(x)){var pt=partOf(x);var qty=pt&&pt.k==='d'?'<input type="number" data-i="'+i+'" data-k="q" value="'+x[1]+'" style="width:60px"><span class="hint" style="margin:0">шт ×</span><input type="number" data-i="'+i+'" data-k="dm" value="'+(x[2]||'')+'" style="width:60px"><span class="hint" style="margin:0">см</span>':
+    '<input type="number" data-i="'+i+'" data-k="q" value="'+x[1]+'" style="width:90px"><span class="hint" style="margin:0">г</span>';
+   return '<tr class="prt"><td class="first"><div class="cellpic"><span class="pic" style="--pb:hsl(30 80% 92%)">'+(pt?partIc(pt):'❔')+'</span>'+sel+'</div></td><td class="pq" data-l="Количество"><div class="row nowrap">'+qty+'</div></td>'+
+   '<td class="pinfo" data-l="Заготовка"><span class="hint" style="margin:0">'+(pt?(pt.k==='d'?'рецепт на 1 корж '+pt.d+' см':'рецепт на '+pt.y+' г')+', '+rub(recCost(pt,1)):'')+'</span></td>'+
+   '<td class="num" data-l="Стоимость">'+rub(itemCost(x))+'</td><td class="del"><button class="x" data-i="'+i+'" data-k="del">×</button></td></tr>'}
+  var p=prod(x[0]);return '<tr><td class="first"><div class="cellpic">'+picHtml(p?p.n:'')+sel+'</div></td>'+
   '<td data-l="Количество"><div class="row nowrap"><input type="number" data-i="'+i+'" data-k="q" value="'+x[1]+'" style="width:90px"><span class="hint" style="margin:0">'+(p?p.u:'')+'</span></div></td>'+
   '<td data-l="'+(p?'Цена за '+p.q+' '+p.u+', ₽':'Цена, ₽')+'"><input type="number" data-i="'+i+'" data-k="pp" value="'+(p?p.p:0)+'" style="width:100px"></td>'+
   '<td class="num" data-l="Стоимость">'+rub(unitPrice(p)*x[1])+'</td><td class="del"><button class="x" data-i="'+i+'" data-k="del">×</button></td></tr>'}).join('');
  recTotals()}
-function recTotals(){var r=rec(curRec);var c=recCost(r);$('rc-total').textContent=rub(c);$('rc-perkg').textContent=r.y>0?rub(c/r.y*1000):'—'}
+function recTotals(){var r=rec(curRec);var c=recCost(r);$('rc-total').textContent=rub(c);
+ $('rc-perkg').textContent=r.k==='d'?rub(c)+' за 1 корж '+(r.d||'?')+' см':r.y>0?rub(c/r.y*1000):'—';
+ var hasP=!isPart(r)&&r.it.some(isPartItem),w=hasP?Math.round(recWeight(r)):0;
+ $('rc-ysum').classList.toggle('hide',!hasP||!w||Math.abs(w-r.y)<5);$('rc-ysum').textContent='По составу ≈ '+w.toLocaleString('ru-RU')+' г — подставить';$('rc-ysum').dataset.w=w}
+$('rc-ysum').onclick=function(){var r=rec(curRec);r.y=+this.dataset.w||r.y;save();renderRecipes()};
+function partUsers(p){return cakes().filter(function(c){return c.it.some(function(x){return x[0]==='@'+p.id})})}
+$('rc-kind').onchange=function(){var r=rec(curRec),k=this.value;
+ if(k&&r.it.some(isPartItem)){toast('Сначала уберите заготовки из состава');this.value=r.k||'';return}
+ if(!k&&isPart(r)&&partUsers(r).length){toast('Заготовка есть в торте «'+partUsers(r)[0].n+'»');this.value=r.k;return}
+ if(k&&!isPart(r)&&cakes().length<2){toast('Нужен хотя бы один торт');this.value='';return}
+ if(k)r.k=k;else delete r.k;if(k==='d'&&!r.d)r.d=20;save();renderRecipes()};
+$('rc-d').oninput=function(){rec(curRec).d=parseFloat(this.value)||0;save();recTotals()};
 $('rc-sel').onchange=function(){curRec=this.value;renderRecipes()};
 $('rc-name').oninput=function(){rec(curRec).n=this.value;save();var o=$('rc-sel').querySelector('option[value="'+curRec+'"]');if(o)o.textContent=this.value};
 $('rc-yield').oninput=function(){rec(curRec).y=parseFloat(this.value)||0;save();recTotals()};
-$('rc-rows').addEventListener('change',function(e){var t=e.target,i=+t.dataset.i,r=rec(curRec);if(t.dataset.k==='p'){r.it[i][0]=t.value;save();renderRecipes()}});
+$('rc-rows').addEventListener('change',function(e){var t=e.target,i=+t.dataset.i,r=rec(curRec);if(t.dataset.k==='p'){var was=isPartItem(r.it[i]);r.it[i]=[t.value,r.it[i][1]];
+ if(isPartItem(r.it[i])){var pt=partOf(r.it[i]);if(pt&&pt.k==='d'){r.it[i]=[t.value,1,pt.d||20]}else if(!was){r.it[i][1]=300}}else if(was){r.it[i][1]=100}
+ save();renderRecipes()}});
 $('rc-rows').addEventListener('input',function(e){var t=e.target,i=+t.dataset.i,r=rec(curRec);
  if(t.dataset.k==='pp'){var p=prod(r.it[i][0]);if(!p)return;p.p=parseFloat(t.value)||0;save();
   [].forEach.call($('rc-rows').querySelectorAll('tr'),function(tr,j){var x=r.it[j];if(x&&x[0]===p.id){tr.querySelector('.num').textContent=rub(unitPrice(p)*x[1]);var inp=tr.querySelector('[data-k=pp]');if(inp!==t)inp.value=p.p}});recTotals();return}
- if(t.dataset.k==='q'){r.it[i][1]=parseFloat(t.value)||0;save();t.closest('tr').querySelector('.num').textContent=rub(unitPrice(prod(r.it[i][0]))*r.it[i][1]);recTotals()}});
+ if(t.dataset.k==='q'||t.dataset.k==='dm'){r.it[i][t.dataset.k==='q'?1:2]=parseFloat(t.value)||0;save();t.closest('tr').querySelector('.num').textContent=rub(itemCost(r.it[i]));recTotals()}});
 $('rc-rows').addEventListener('click',function(e){var t=e.target;if(t.dataset.k==='del'){rec(curRec).it.splice(+t.dataset.i,1);save();renderRecipes()}});
 $('rc-addrow').onclick=function(){rec(curRec).it.push([S.products[0].id,100]);save();flashLast=true;renderRecipes();doFlash('rc-rows')};
+$('rc-addpart').onclick=function(){var ps=partsList();if(!ps.length){toast('Сначала создайте заготовку кнопкой «+ Заготовка»');return}var p=ps[0];
+ rec(curRec).it.push(p.k==='d'?['@'+p.id,1,p.d||20]:['@'+p.id,300]);save();flashLast=true;renderRecipes();doFlash('rc-rows')};
+$('rc-newpart').onclick=function(){var r={id:uid(),k:'d',d:20,y:450,n:'Новая заготовка',it:[]};S.recipes.push(r);curRec=r.id;save();renderRecipes();
+ toast('Выберите тип заготовки и добавьте продукты');setTimeout(function(){$('rc-edit').scrollIntoView({behavior:'smooth',block:'start'});$('rc-name').select()},150)};
 $('rc-ic').onclick=function(e){var b=e.target.closest('button');if(!b)return;rec(curRec).ic=b.dataset.c;save();renderRecipes()};
 var cmIc='🎂';
 function cmChips(){$('cm-ic').innerHTML=CAKEICONS.map(function(c){return '<button type="button" class="'+(cmIc===c?'on':'')+'" data-c="'+c+'">'+c+'</button>'}).join('');$('cm-pic').textContent=cmIc}
@@ -670,7 +724,8 @@ $('cm-ok').onclick=function(){var n=$('cm-n').value.trim();if(!n){toast('Впи�
 $('rc-new').onclick=openCM;
 $('pm-n').addEventListener('input',function(){$('pm-pic').textContent=picOf(this.value)});
 $('rc-copy').onclick=function(){var s=rec(curRec),r=JSON.parse(JSON.stringify(s));r.id=uid();r.n=s.n+' (копия)';S.recipes.push(r);curRec=r.id;save();renderRecipes()};
-$('rc-del').onclick=function(){if(S.recipes.length<2){toast('Нужен хотя бы один рецепт');return}if(!confirm('Удалить рецепт «'+rec(curRec).n+'»?'))return;S.recipes=S.recipes.filter(function(r){return r.id!==curRec});curRec=null;save();renderRecipes()};
+$('rc-del').onclick=function(){var cr=rec(curRec);if(!isPart(cr)&&cakes().length<2){toast('Нужен хотя бы один торт');return}
+ if(isPart(cr)&&partUsers(cr).length){toast('Заготовка есть в торте «'+partUsers(cr)[0].n+'»');return}if(!confirm('Удалить рецепт «'+rec(curRec).n+'»?'))return;S.recipes=S.recipes.filter(function(r){return r.id!==curRec});curRec=null;save();renderRecipes()};
 
 /* PRODUCTS */
 function renderProducts(){
@@ -702,8 +757,8 @@ function renderSettings(){for(var k in smap)$(k).value=S.set[smap[k]]}
 Object.keys(smap).forEach(function(k){$(k).addEventListener('input',function(){S.set[smap[k]]=parseFloat(this.value)||0;save()})});
 $('s-export').onclick=function(){var b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='konditer-kopiya-'+today()+'.json';document.body.appendChild(a);a.click();a.remove()};
 $('s-import').onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var d=JSON.parse(rd.result);if(!d.products||!d.recipes)throw 0;S=d;load2();save();toast('Копия загружена');renderAll()}catch(e){toast('Это не файл копии')}};rd.readAsText(f);this.value=''};
-function load2(){S.set=Object.assign({},DEF.set,S.set||{});S.orders=S.orders||[]}
-$('s-reset').onclick=function(){if(!confirm('Удалить все продукты, рецепты и заказы и вернуть примеры?'))return;S=JSON.parse(JSON.stringify(DEF));save();renderAll();toast('Сброшено')};
+function load2(){S.set=Object.assign({},DEF.set,S.set||{});S.orders=S.orders||[];seedParts()}
+$('s-reset').onclick=function(){if(!confirm('Удалить все продукты, рецепты и заказы и вернуть примеры?'))return;S=JSON.parse(JSON.stringify(DEF));seedParts();save();renderAll();toast('Сброшено')};
 
 /* COPY / CLIENT TEXT */
 function copyText(t,msg){function fb(){var a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy');toast(msg||'Скопировано')}catch(e){prompt('Скопируйте текст:',t)}a.remove()}
@@ -717,7 +772,7 @@ function clientText(o){var left=Math.max(0,o.price-o.pre);
  'Если что-то нужно поменять, напишите мне. Спасибо!'}
 
 /* TOOLS */
-function findRec(name){name=(name||'').trim().toLowerCase();return S.recipes.filter(function(r){return r.n.trim().toLowerCase()===name})[0]||null}
+function findRec(name){name=(name||'').trim().toLowerCase();return cakes().filter(function(r){return r.n.trim().toLowerCase()===name})[0]||null}
 function area(s,d){return s==='s'?d*d:Math.PI*d*d/4}
 function fmtQ(v,u){if(u==='шт')return Math.ceil(v)+' шт';if(v>=1000)return (Math.round(v/100)/10).toString().replace('.',',')+(u==='мл'?' л':' кг');return Math.round(v)+' '+u}
 function guests(){var n=num('g-n'),g=+$('g-t').value;var kg=Math.max(1,Math.ceil(n*g/1000*2)/2);
@@ -729,13 +784,14 @@ function forms(){var k=formK();var r=rec($('f-rec').value);
  $('f-res').innerHTML='Умножьте все продукты на<b class="big2">× '+(Math.round(k*100)/100).toString().replace('.',',')+'</b>'+(r?'<span class="hint">«'+esc(r.n)+'»: выход '+fmtQ(r.y,'г')+' → '+fmtQ(r.y*k,'г')+', продукты '+rub(recCost(r))+' → '+rub(recCost(r)*k)+'</span>':'')}
 ['f-s1','f-d1','f-s2','f-d2','f-rec'].forEach(function(id){$(id).addEventListener('input',forms);$(id).addEventListener('change',forms)});
 $('f-make').onclick=function(){var s=rec($('f-rec').value),k=formK();if(!s)return;var r=JSON.parse(JSON.stringify(s));r.id=uid();
- r.n=s.n+' (форма '+num('f-d2')+' см)';r.y=Math.round(s.y*k);r.it=r.it.map(function(x){var p=prod(x[0]);var q=x[1]*k;return [x[0],p&&p.u==='шт'?Math.ceil(q):Math.round(q)]});
+ r.n=s.n+' (форма '+num('f-d2')+' см)';r.y=Math.round(s.y*k);r.it=r.it.map(function(x){if(isPartItem(x)){var pt=partOf(x);if(pt&&pt.k==='d')return [x[0],x[1],Math.round((x[2]||pt.d)*Math.sqrt(k))];return [x[0],Math.round(x[1]*k)]}
+  var p=prod(x[0]);var q=x[1]*k;return [x[0],p&&p.u==='шт'?Math.ceil(q):Math.round(q)]});
  S.recipes.push(r);save();toast('Создан рецепт «'+r.n+'»');curRec=r.id;document.querySelector('nav button[data-t=recipes]').click()};
 var shText='';
 function shopping(){var d=+$('sh-d').value,t=today(),e=new Date();e.setDate(e.getDate()+d);e.setMinutes(e.getMinutes()-e.getTimezoneOffset());var end=e.toISOString().slice(0,10);
  var need={},used=[],miss=[];
  S.orders.filter(function(o){return !o.done&&o.date>=t&&o.date<=end}).forEach(function(o){var r=findRec(o.cake);if(!r||!r.y||!o.kg){miss.push(o.cake||'без названия');return}
-  used.push(o);var f=o.kg*1000/r.y;r.it.forEach(function(x){need[x[0]]=(need[x[0]]||0)+x[1]*f})});
+  used.push(o);addNeed(r,o.kg*1000/r.y,need)});
  if(!used.length){$('sh-res').innerHTML='<p class="hint" style="margin-top:12px">На этот период нет заказов с тортами из ваших рецептов.'+(miss.length?' Не найдены рецепты: '+esc(miss.join(', '))+'. Название торта в заказе должно совпадать с названием рецепта.':'')+'</p>';shText='';return}
  var tot=0,rows='',lines=['Список покупок на '+used.length+' заказ(а):'];
  Object.keys(need).forEach(function(id){var p=prod(id);if(!p)return;var q=need[id];var packs=Math.max(1,Math.ceil(q/p.q));var c=packs*p.p;tot+=c;
@@ -754,7 +810,7 @@ function month(){var m=$('m-m').value||today().slice(0,7);var os=S.orders.filter
 $('m-m').onchange=month;
 function renderTools(){if(!$('m-m').value)$('m-m').value=today().slice(0,7);var c=$('f-rec').value;fillRecSelect($('f-rec'),c);guests();forms();shopping();month()}
 
-function render(t){if(t==='calc'){var c=$('c-rec').value;fillRecSelect($('c-rec'),c);calc()}if(t==='orders'){$('o-cakes').innerHTML=S.recipes.map(function(r){return '<option value="'+esc(r.n)+'">'}).join('');renderOrders()}if(t==='recipes')renderRecipes();if(t==='products')renderProducts();if(t==='tools')renderTools();if(t==='settings')renderSettings()}
+function render(t){if(t==='calc'){var c=$('c-rec').value;fillRecSelect($('c-rec'),c);calc()}if(t==='orders'){$('o-cakes').innerHTML=cakes().map(function(r){return '<option value="'+esc(r.n)+'">'}).join('');renderOrders()}if(t==='recipes')renderRecipes();if(t==='products')renderProducts();if(t==='tools')renderTools();if(t==='settings')renderSettings()}
 function renderAll(){['calc','orders','recipes','products','tools','settings'].forEach(render)}
 load();renderAll();
 
